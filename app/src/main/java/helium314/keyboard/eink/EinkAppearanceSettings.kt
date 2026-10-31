@@ -12,7 +12,9 @@ import helium314.keyboard.settings.Setting
 import helium314.keyboard.settings.preferences.SliderPreference
 import helium314.keyboard.settings.preferences.SwitchPreference
 
-fun einkAppearanceItems(prefs: SharedPreferences): List<String> =
+fun einkAppearanceItems(prefs: SharedPreferences): List<String> = einkStyleItems(prefs) + A9ScreenClearer.PREF_CLEAR_ON_HIDE
+
+private fun einkStyleItems(prefs: SharedPreferences): List<String> =
     if (prefs.getString(Settings.PREF_THEME_STYLE, Defaults.PREF_THEME_STYLE) != KeyboardTheme.STYLE_EINK) emptyList()
     else listOf(
         EinkStyle.PREF_BORDER_WIDTH,
@@ -61,6 +63,9 @@ fun createEinkAppearanceSettings(context: Context) = listOf(
     },
     Setting(context, EinkStyle.PREF_MONOCHROME_EMOJI, R.string.eink_monochrome_emoji, R.string.eink_monochrome_emoji_summary) {
         SwitchPreference(it, EinkStyle.DEFAULT_MONOCHROME_EMOJI) { reloadKeyboardTheme() }
+    },
+    Setting(context, A9ScreenClearer.PREF_CLEAR_ON_HIDE, R.string.eink_a9_clear_on_hide, R.string.eink_a9_clear_on_hide_summary) {
+        SwitchPreference(it, A9ScreenClearer.DEFAULT_CLEAR_ON_HIDE)
     },
 )
 
