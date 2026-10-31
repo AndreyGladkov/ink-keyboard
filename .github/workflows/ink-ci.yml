@@ -1,0 +1,46 @@
+name: Ink Keyboard CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - uses: gradle/actions/setup-gradle@v3
+
+      - name: Unit tests
+        run: ./gradlew testRunTestsUnitTest
+
+      - name: Build foss and play APKs
+        run: ./gradlew assembleRelease assembleNouserlib
+
+      - name: Upload foss APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: InkKeyboard-foss-unsigned
+          path: app/build/outputs/apk/release/*.apk
+
+      - name: Upload play APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: InkKeyboard-play-unsigned
+          path: app/build/outputs/apk/nouserlib/*.apk
+
+      - name: Archive reports for failed job
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: '*/build/reports'
+        if: ${{ failure() }}
