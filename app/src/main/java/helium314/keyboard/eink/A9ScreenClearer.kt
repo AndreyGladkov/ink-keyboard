@@ -29,8 +29,10 @@ class A9ScreenClearer(
         const val A9_SERVICE_PACKAGE = "com.lmqr.ha9_comp_service"
         const val ACTION_FORCE_CLEAR = "EINK_FORCE_CLEAR"
 
-        // The IME window slides out for about 300 ms; clearing earlier leaves its ghost on the panel.
-        const val CLEAR_DELAY_MS = 400L
+        // The frame without the keyboard is ready within ~300 ms, but the panel keeps working through queued
+        // updates for a while longer; clearing before they finish leaves the keyboard's ghost.
+        // A9PatchingService waits 700 ms after closing the notification shade for the same reason.
+        const val CLEAR_DELAY_MS = 800L
 
         fun create(context: Context) = A9ScreenClearer(
             isEnabled = { context.prefs().getBoolean(PREF_CLEAR_ON_HIDE, DEFAULT_CLEAR_ON_HIDE) },
