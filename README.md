@@ -14,7 +14,7 @@ Regular keyboards are designed for LCD and OLED screens. On e-ink, their gray fi
 - **Pure black and white rendering.** Antialiasing is off by default, so fast refresh modes don't turn grey edges into dither noise. It can be turned back on.
 - **No animations or key preview popups.** Long-press popups, the emoji panel, the clipboard and the suggestion list follow the same style and appear instantly.
 - **Haptic feedback instead of visual.** Inverting the pressed key is available as an option.
-- **Black and white emoji** on the emoji panel, using [Noto Emoji](https://github.com/googlefonts/noto-emoji).
+- **Black and white emoji** on the emoji panel, using [Noto Emoji](https://github.com/google/fonts/tree/main/ofl/notoemoji).
 - **Hisense A9 integration (optional).** A full screen refresh when the keyboard hides. It is sent through the broadcast API of [A9PatchingService](https://github.com/AndreyGladkov/A9PatchingService).
 - **Gesture typing (later).** It will use an open source decoder and draw no trail.
 - **Offline only.** The app has no internet permission.
@@ -54,3 +54,4 @@ The app is based on the Apache 2.0 licensed AOSP Keyboard, so an [Apache 2.0](LI
 - [Simple Keyboard](https://github.com/rkkr/simple-keyboard)
 - [Indic Keyboard](https://gitlab.com/indicproject/indic-keyboard)
 - [FlorisBoard](https://github.com/florisboard/florisboard/)
+- Black and white emoji: [Noto Emoji](https://github.com/google/fonts/tree/main/ofl/notoemoji) by Google, [SIL Open Font License 1.1](app/src/main/assets/fonts/NotoEmoji-OFL.txt)

@@ -14,4 +14,8 @@
     <string name="eink_antialias_summary">Antialias text, icons and borders. Off keeps the keyboard pure black and white, which looks crisper in fast refresh modes.</string>
     <string name="eink_invert_pressed_key">Invert pressed key</string>
     <string name="eink_invert_pressed_key_summary">Fill the key while it is held. When off, only vibration confirms a press.</string>
+    <string name="eink_monochrome_emoji">Black and white emoji</string>
+    <string name="eink_monochrome_emoji_summary">Draw emoji in the keyboard with a monochrome font. Emoji missing from it are converted to black and white. Inserted emoji still appear in color in the app.</string>
+    <string name="eink_attributions">Third-party content</string>
+    <string name="eink_attributions_summary">Black and white emoji: Noto Emoji by Google, SIL Open Font License 1.1.</string>
 </resources>

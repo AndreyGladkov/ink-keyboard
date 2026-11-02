@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Typeface
 import android.widget.TextView
 import androidx.compose.ui.text.font.FontFamily
+import helium314.keyboard.eink.EinkEmoji
 import helium314.keyboard.eink.EinkRendering
 import helium314.keyboard.latin.common.isEmoji
 import helium314.keyboard.latin.settings.Settings
@@ -72,7 +73,7 @@ object KeyboardTypeface {
         text: CharSequence?,
         defaultTypeface: Typeface = Typeface.DEFAULT,
     ): Typeface {
-        val emojiTypeface = emojiTypeface()
+        val emojiTypeface = emojiTypeface() ?: Settings.getCurrentContext()?.let { EinkEmoji.typeface(it, Settings.getValues()?.mColors) }
         return if (emojiTypeface != null && text != null && isEmoji(text)) {
             emojiTypeface
         } else {

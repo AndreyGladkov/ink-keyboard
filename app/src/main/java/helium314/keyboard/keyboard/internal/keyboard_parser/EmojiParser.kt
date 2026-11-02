@@ -2,6 +2,7 @@
 package helium314.keyboard.keyboard.internal.keyboard_parser
 
 import android.content.Context
+import helium314.keyboard.eink.EinkEmoji
 import helium314.keyboard.keyboard.Key
 import helium314.keyboard.keyboard.Key.KeyParams
 import helium314.keyboard.keyboard.KeyboardElement
@@ -103,11 +104,13 @@ fun loadEmojiDefaultVersionsAndPopupSpecs(context: Context) {
 
 private fun loadEmojiDefaultVersionsAndPopupSpecs(context: Context, category2EmojiLines: List<String>?) {
     val defaultTone = context.prefs().getString(Settings.PREF_EMOJI_SKIN_TONE, Defaults.PREF_EMOJI_SKIN_TONE)
-    if (defaultSkinTone == defaultTone) {
+    val tonePopups = !EinkEmoji.isMonochrome(Settings.getValues()?.mColors)
+    if (defaultSkinTone == defaultTone && skinTonePopups == tonePopups) {
         return
     }
 
     defaultSkinTone = defaultTone
+    skinTonePopups = tonePopups
     emojiDefaultVersions.clear()
     emojiNeutralVersions.clear()
     emojiPopupSpecs.clear()
@@ -124,8 +127,9 @@ private fun loadEmojiDefaultVersionsAndPopupSpecs(context: Context, category2Emo
                 Collections.swap(split, 0, foundIndex)
             }
         }
-        split.drop(1).filterNot { SupportedEmojis.isUnsupported(it) }
-            .takeIf { it.isNotEmpty() }?.joinToString(",")?.let { emojiPopupSpecs[split.first()] = it }
+        if (tonePopups)
+            split.drop(1).filterNot { SupportedEmojis.isUnsupported(it) }
+                .takeIf { it.isNotEmpty() }?.joinToString(",")?.let { emojiPopupSpecs[split.first()] = it }
     }
 }
 
@@ -149,6 +153,7 @@ private fun loadEmojiFile(emojiFileName: String, context: Context): List<String>
 const val EMOJI_HINT_LABEL = "◥"
 
 private var defaultSkinTone: String? = null
+private var skinTonePopups: Boolean? = null
 private val emojiDefaultVersions: MutableMap<String, String> = mutableMapOf()
 private val emojiNeutralVersions: MutableMap<String, String> = mutableMapOf()
 private val emojiPopupSpecs: MutableMap<String, String> = mutableMapOf()

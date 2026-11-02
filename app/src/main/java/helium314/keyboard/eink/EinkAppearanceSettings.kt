@@ -20,6 +20,7 @@ fun einkAppearanceItems(prefs: SharedPreferences): List<String> =
         EinkStyle.PREF_LABEL_WEIGHT,
         EinkStyle.PREF_ANTIALIAS,
         EinkStyle.PREF_INVERT_PRESSED_KEY,
+        EinkStyle.PREF_MONOCHROME_EMOJI,
     )
 
 fun createEinkAppearanceSettings(context: Context) = listOf(
@@ -57,6 +58,9 @@ fun createEinkAppearanceSettings(context: Context) = listOf(
     },
     Setting(context, EinkStyle.PREF_INVERT_PRESSED_KEY, R.string.eink_invert_pressed_key, R.string.eink_invert_pressed_key_summary) {
         SwitchPreference(it, EinkStyle.DEFAULT_INVERT_PRESSED_KEY) { reloadKeyboardTheme() }
+    },
+    Setting(context, EinkStyle.PREF_MONOCHROME_EMOJI, R.string.eink_monochrome_emoji, R.string.eink_monochrome_emoji_summary) {
+        SwitchPreference(it, EinkStyle.DEFAULT_MONOCHROME_EMOJI) { reloadKeyboardTheme() }
     },
 )
 
