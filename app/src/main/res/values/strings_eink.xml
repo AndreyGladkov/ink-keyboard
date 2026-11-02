@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-License-Identifier: GPL-3.0-only
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="style_name_Eink" tools:keep="@string/style_name_Eink">E-ink</string>
+    <string name="theme_name_eink_white" tools:keep="@string/theme_name_eink_white">E-ink: black on white</string>
+    <string name="theme_name_eink_black" tools:keep="@string/theme_name_eink_black">E-ink: white on black</string>
+    <string name="eink_border_width">Key border width</string>
+    <string name="eink_corner_radius">Key corner radius</string>
+    <string name="eink_label_weight">Label weight</string>
+    <string name="eink_label_weight_summary">Stroke thickness of key labels, 400 is regular, 700 is bold. Requires Android 9.</string>
+    <string name="eink_antialias">Smooth edges</string>
+    <string name="eink_antialias_summary">Antialias text, icons and borders. Off keeps the keyboard pure black and white, which looks crisper in fast refresh modes.</string>
+    <string name="eink_invert_pressed_key">Invert pressed key</string>
+    <string name="eink_invert_pressed_key_summary">Fill the key while it is held. When off, only vibration confirms a press.</string>
+</resources>

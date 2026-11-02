@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-License-Identifier: GPL-3.0-only
+-->
+<resources>
+    <string name="style_name_Eink">E-ink</string>
+    <string name="theme_name_eink_white">E-ink: чёрное на белом</string>
+    <string name="theme_name_eink_black">E-ink: белое на чёрном</string>
+    <string name="eink_border_width">Толщина рамки клавиш</string>
+    <string name="eink_corner_radius">Скругление углов клавиш</string>
+    <string name="eink_label_weight">Толщина шрифта</string>
+    <string name="eink_label_weight_summary">Насыщенность подписей на клавишах: 400 — обычный, 700 — жирный. Работает на Android 9 и новее.</string>
+    <string name="eink_antialias">Сглаживание</string>
+    <string name="eink_antialias_summary">Сглаживать края текста, иконок и рамок. Без сглаживания клавиатура остаётся строго чёрно-белой и чётче выглядит в быстрых режимах обновления.</string>
+    <string name="eink_invert_pressed_key">Инвертировать нажатую клавишу</string>
+    <string name="eink_invert_pressed_key_summary">Заливать клавишу, пока её держат. Если выключено, нажатие подтверждается только вибрацией.</string>
+</resources>

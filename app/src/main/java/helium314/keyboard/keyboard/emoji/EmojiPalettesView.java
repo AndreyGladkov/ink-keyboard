@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import helium314.keyboard.eink.EinkColors;
 import helium314.keyboard.event.HapticEvent;
 import helium314.keyboard.keyboard.Key;
 import helium314.keyboard.keyboard.Keyboard;
@@ -238,9 +239,9 @@ public final class EmojiPalettesView extends LinearLayout
     private void addTab(LinearLayout host, EmojiCategory.Category category) {
         final ImageView iconView = new ImageView(getContext());
         mColors.setBackground(iconView, ColorType.STRIP_BACKGROUND);
-        mColors.setColor(iconView, ColorType.EMOJI_CATEGORY);
         iconView.setScaleType(ImageView.ScaleType.CENTER);
         iconView.setImageResource(mEmojiCategory.getCategoryTabIcon(category));
+        mColors.setColor(iconView, ColorType.EMOJI_CATEGORY);
         iconView.setContentDescription(mEmojiCategory.getAccessibilityDescription(category));
         iconView.setTag(category);
         host.addView(iconView);
@@ -465,7 +466,8 @@ public final class EmojiPalettesView extends LinearLayout
     }
 
     private boolean isAnimationsDisabled() {
-        return android.provider.Settings.Global.getFloat(getContext().getContentResolver(),
+        return Settings.getValues().mColors instanceof EinkColors
+                || android.provider.Settings.Global.getFloat(getContext().getContentResolver(),
                                                          android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f) == 0.0f;
     }
 

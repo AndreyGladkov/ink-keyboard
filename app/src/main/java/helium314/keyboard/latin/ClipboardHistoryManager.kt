@@ -17,6 +17,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.view.inputmethod.InputContentInfoCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import helium314.keyboard.eink.EinkRendering
 import helium314.keyboard.keyboard.KeyboardTypeface
 import helium314.keyboard.compat.ClipboardManagerCompat
 import helium314.keyboard.event.Event
@@ -209,6 +210,7 @@ class ClipboardHistoryManager(
             if (InputTypeUtils.isNumberInputType(inputType) && !content.isValidNumber()) return null
             val shortenedContent = content.take(200) // for display only
             KeyboardTypeface.applyToTextView(textView)
+            EinkRendering.applyTextAntiAlias(textView, Settings.getValues().mColors)
             textView.text = (if (isClipSensitive(inputType)) "*".repeat(shortenedContent.length) else shortenedContent)
         }
         val onClickListener = View.OnClickListener {
