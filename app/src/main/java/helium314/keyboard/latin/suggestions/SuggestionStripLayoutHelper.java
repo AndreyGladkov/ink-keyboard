@@ -36,6 +36,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import helium314.keyboard.eink.EinkColors;
+import helium314.keyboard.eink.EinkRendering;
 import helium314.keyboard.accessibility.AccessibilityUtils;
 import helium314.keyboard.keyboard.KeyboardTypeface;
 import helium314.keyboard.latin.PunctuationSuggestions;
@@ -116,7 +118,8 @@ final class SuggestionStripLayoutHelper {
         final TypedArray a = context.obtainStyledAttributes(attrs,
                 R.styleable.SuggestionStripView, defStyle, R.style.SuggestionStripView);
         mSuggestionStripOptions = a.getInt(R.styleable.SuggestionStripView_suggestionStripOptions, 0);
-        mAlphaObsoleted = ResourceUtils.getFraction(a, R.styleable.SuggestionStripView_alphaObsoleted, 1.0f);
+        mAlphaObsoleted = Settings.getValues().mColors instanceof EinkColors ? 1.0f
+                : ResourceUtils.getFraction(a, R.styleable.SuggestionStripView_alphaObsoleted, 1.0f);
 
         final Colors colors = Settings.getValues().mColors;
         mColorValidTypedWord = colors.get(ColorType.SUGGESTION_VALID_WORD);
@@ -170,7 +173,7 @@ final class SuggestionStripLayoutHelper {
 
     private static Drawable getMoreSuggestionsHint(final Resources res, final float textSize, final int color) {
         final Paint paint = new Paint();
-        paint.setAntiAlias(true);
+        paint.setAntiAlias(EinkRendering.antiAlias(Settings.getValues().mColors));
         paint.setTextAlign(Align.CENTER);
         paint.setTextSize(textSize);
         paint.setColor(color);

@@ -27,6 +27,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import helium314.keyboard.eink.EinkColors;
+import helium314.keyboard.eink.EinkRendering;
 import helium314.keyboard.keyboard.emoji.EmojiPageKeyboardView;
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
 import helium314.keyboard.keyboard.internal.KeyVisualAttributes;
@@ -55,6 +57,7 @@ public class KeyboardView extends View {
     private final String mKeyPopupHintLetter;
     private final float mKeyPopupHintLetterPadding;
     private final float mKeyShiftedLetterHintPadding;
+    private final float mHintBorderInset;
     private final float mKeyTextShadowRadius;
     private final float mVerticalCorrection;
     private final Drawable mKeyBackground;
@@ -113,6 +116,8 @@ public class KeyboardView extends View {
             mKeyBackground = mColors.selectAndColorDrawable(keyboardViewAttr, ColorType.MORE_SUGGESTIONS_WORD_BACKGROUND);
         else if (this instanceof PopupKeysKeyboardView)
             mKeyBackground = mColors.selectAndColorDrawable(keyboardViewAttr, ColorType.POPUP_KEYS_BACKGROUND);
+        else if (this instanceof EmojiPageKeyboardView && mColors instanceof EinkColors eink)
+            mKeyBackground = eink.selectable();
         else
             mKeyBackground = mColors.selectAndColorDrawable(keyboardViewAttr, ColorType.KEY_BACKGROUND);
         mKeyBackground.getPadding(mKeyBackgroundPadding);
@@ -125,15 +130,16 @@ public class KeyboardView extends View {
 
         mSpacebarIconWidthRatio = keyboardViewAttr.getFloat(
                 R.styleable.KeyboardView_spacebarIconWidthRatio, 1.0f);
+        mHintBorderInset = EinkRendering.hintBorderInset(mColors, context);
         mKeyHintLetterPadding = keyboardViewAttr.getDimension(
-                R.styleable.KeyboardView_keyHintLetterPadding, 0.0f);
+                R.styleable.KeyboardView_keyHintLetterPadding, 0.0f) + mHintBorderInset;
         mKeyPopupHintLetter = Settings.getValues().mShowsPopupHints
                 ? keyboardViewAttr.getString(R.styleable.KeyboardView_keyPopupHintLetter)
                 : "";
         mKeyPopupHintLetterPadding = keyboardViewAttr.getDimension(
-                R.styleable.KeyboardView_keyPopupHintLetterPadding, 0.0f);
+                R.styleable.KeyboardView_keyPopupHintLetterPadding, 0.0f) + mHintBorderInset;
         mKeyShiftedLetterHintPadding = keyboardViewAttr.getDimension(
-                R.styleable.KeyboardView_keyShiftedLetterHintPadding, 0.0f);
+                R.styleable.KeyboardView_keyShiftedLetterHintPadding, 0.0f) + mHintBorderInset;
         mKeyTextShadowRadius = keyboardViewAttr.getFloat(
                 R.styleable.KeyboardView_keyTextShadowRadius, KET_TEXT_SHADOW_RADIUS_DISABLED);
         mVerticalCorrection = keyboardViewAttr.getDimension(
@@ -146,7 +152,7 @@ public class KeyboardView extends View {
         mKeyVisualAttributes = KeyVisualAttributes.newInstance(keyAttr);
         keyAttr.recycle();
 
-        mPaint.setAntiAlias(true);
+        mPaint.setAntiAlias(EinkRendering.antiAlias(mColors));
         setFitsSystemWindows(true);
     }
 
@@ -443,6 +449,8 @@ public class KeyboardView extends View {
                 } else {
                     paint.clearShadowLayer();
                 }
+                if (EinkRendering.isInverted(mColors, key))
+                    paint.setColor(((EinkColors) mColors).contentColor(true));
             } else {
                 // Make label invisible
                 paint.setColor(Color.TRANSPARENT);
@@ -461,7 +469,7 @@ public class KeyboardView extends View {
                         : key.getHintIcon(keyboard.mIconsSet, params.mAnimAlpha);
         if (hintLabel != null && mShowsHints) {
             paint.setTextSize(key.selectHintTextSize(params) * mHintFontSizeMultiplier);
-            paint.setColor(key.selectHintTextColor(params));
+            paint.setColor(EinkRendering.isInverted(mColors, key) ? ((EinkColors) mColors).contentColor(true) : key.selectHintTextColor(params));
             // TODO: Should add a way to specify type face for hint letters
             paint.setTypeface(KeyboardTypeface.resolve(hintLabel, Typeface.DEFAULT_BOLD));
             blendAlpha(paint, params.mAnimAlpha);
@@ -488,13 +496,13 @@ public class KeyboardView extends View {
                 // The hint label is placed at top-right corner of the key. Used mainly on tablet.
                 hintX = keyWidth - mKeyShiftedLetterHintPadding - labelCharWidth / 2.0f;
                 paint.getFontMetrics(mFontMetrics);
-                hintBaseline = -mFontMetrics.top;
+                hintBaseline = -mFontMetrics.top + mHintBorderInset;
                 paint.setTextAlign(Align.CENTER);
             } else { // key.hasHintLetter()
                 // The hint letter is placed at top-right corner of the key. Used mainly on phone.
                 final float hintDigitWidth = TypefaceUtils.getReferenceDigitWidth(paint);
                 final float hintLabelWidth = TypefaceUtils.getStringWidth(hintLabel, paint);
-                hintBaseline = -paint.ascent();
+                hintBaseline = -paint.ascent() + mHintBorderInset;
                 hintX = isFunctionalKeyAndRoundedStyle
                         ? keyWidth - hintBaseline
                         : keyWidth - mKeyHintLetterPadding - Math.max(hintDigitWidth, hintLabelWidth) / 2.0f;
@@ -516,7 +524,7 @@ public class KeyboardView extends View {
                 // The hint label is placed at top-right corner of the key. Used mainly on tablet.
                 hintX = keyWidth - mKeyShiftedLetterHintPadding - iconSize / 2.0f;
                 paint.getFontMetrics(mFontMetrics);
-                hintBaseline = -mFontMetrics.top;
+                hintBaseline = -mFontMetrics.top + mHintBorderInset;
             } else { // key.hasHintLetter()
                 // The hint letter is placed at top-right corner of the key. Used mainly on phone.
                 hintBaseline = 0;
@@ -528,7 +536,7 @@ public class KeyboardView extends View {
                                       ? iconSize * 0.5f
                                       : params.mHintLabelVerticalAdjustment * iconSize;
             hintIcon.setColorFilter(key.selectHintTextColor(params), PorterDuff.Mode.MULTIPLY);
-            drawIcon(canvas, hintIcon, (int)hintX, (int)(hintBaseline + adjustmentY), iconSize, iconSize);
+            drawKeyIcon(key, canvas, hintIcon, (int)hintX, (int)(hintBaseline + adjustmentY), iconSize, iconSize);
         } else if (key.getPopupKeys() != null && ! key.hasNoPanelAutoPopupKey()
                         && (key.hasActionKeyBackground() || key.getBackgroundType() == Key.BACKGROUND_TYPE_FUNCTIONAL)) {
             drawKeyPopupHint(key, canvas, paint, params);
@@ -545,7 +553,7 @@ public class KeyboardView extends View {
                 : (keyHeight - iconHeight) / 2; // Align vertically center.
             int iconX = (keyWidth - iconWidth) / 2; // Align horizontally center.
             setKeyIconColor(key, icon, keyboard);
-            drawIcon(canvas, icon, iconX, iconY, iconWidth, iconHeight);
+            drawKeyIcon(key, canvas, icon, iconX, iconY, iconWidth, iconHeight);
         }
     }
 
@@ -576,6 +584,19 @@ public class KeyboardView extends View {
         canvas.drawText(mKeyPopupHintLetter, hintX, hintY, paint);
     }
 
+    private void drawKeyIcon(@NonNull final Key key, @NonNull final Canvas canvas, @NonNull final Drawable icon,
+            final int x, final int y, final int width, final int height) {
+        if (mColors instanceof EinkColors eink) {
+            final int color = eink.contentColor(EinkRendering.isInverted(eink, key));
+            if (EinkRendering.drawsMonochromeIcons(eink)) {
+                EinkRendering.drawMonochromeIcon(canvas, icon, x, y, width, height, color);
+                return;
+            }
+            icon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        }
+        drawIcon(canvas, icon, x, y, width, height);
+    }
+
     protected static void drawIcon(@NonNull final Canvas canvas,@NonNull final Drawable icon,
             final int x, final int y, final int width, final int height) {
         canvas.translate(x, y);
@@ -586,7 +607,7 @@ public class KeyboardView extends View {
 
     public Paint newLabelPaint(@Nullable final Key key) {
         final Paint paint = new Paint();
-        paint.setAntiAlias(true);
+        paint.setAntiAlias(EinkRendering.antiAlias(mColors));
         if (key == null) {
             paint.setTypeface(mKeyDrawParams.mTypeface);
             paint.setTextSize(mKeyDrawParams.mLabelSize);

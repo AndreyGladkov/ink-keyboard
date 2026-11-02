@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import androidx.core.view.ViewKt;
 
 import helium314.keyboard.accessibility.AccessibilityUtils;
+import helium314.keyboard.eink.EinkRendering;
 import helium314.keyboard.keyboard.MainKeyboardView;
 import helium314.keyboard.latin.common.ColorType;
 import helium314.keyboard.latin.settings.Settings;
@@ -108,6 +109,7 @@ public final class InputView extends FrameLayout {
 
     private Unit onNextLayout(View v) {
         Settings.getValues().mColors.setBackground(findViewById(R.id.main_keyboard_frame), ColorType.MAIN_BACKGROUND);
+        EinkRendering.applyToViewTree(this, Settings.getValues().mColors);
 
         // Work around inset application being unreliable
         requestApplyInsets();

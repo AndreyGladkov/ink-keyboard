@@ -14,6 +14,8 @@ import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import helium314.keyboard.eink.EinkColors
+import helium314.keyboard.eink.EinkStyle
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.common.AllColors
 import helium314.keyboard.latin.common.ColorType
@@ -47,6 +49,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
         const val STYLE_MATERIAL = "Material"
         const val STYLE_HOLO = "Holo"
         const val STYLE_ROUNDED = "Rounded"
+        const val STYLE_EINK = "Eink"
 
         // new themes that are just colors
         const val THEME_LIGHT = "light"
@@ -65,7 +68,10 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
         const val THEME_PINK = "pink"
         const val THEME_SAND = "sand"
         const val THEME_VIOLETTE = "violette"
+        const val THEME_EINK_WHITE = "eink_white"
+        const val THEME_EINK_BLACK = "eink_black"
         fun getAvailableDefaultColors(prefs: SharedPreferences, isNight: Boolean) = listOfNotNull(
+            THEME_EINK_WHITE, THEME_EINK_BLACK,
             if (!isNight) THEME_LIGHT else null, THEME_DARK,
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) THEME_DYNAMIC else null,
             if (prefs.getString(Settings.PREF_THEME_STYLE, Defaults.PREF_THEME_STYLE) == STYLE_HOLO) THEME_HOLO_WHITE else null,
@@ -82,7 +88,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
             if (!isNight) THEME_SAND else null,
             THEME_VIOLETTE
         )
-        val STYLES = arrayOf(STYLE_MATERIAL, STYLE_HOLO, STYLE_ROUNDED)
+        val STYLES = arrayOf(STYLE_EINK, STYLE_MATERIAL, STYLE_HOLO, STYLE_ROUNDED)
 
         // These should be aligned with Keyboard.themeId and Keyboard.Case.keyboardTheme
         // attributes' values in attrs.xml.
@@ -121,6 +127,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
             val matchingId = when (style) {
                 STYLE_HOLO -> THEME_ID_HOLO_BASE
                 STYLE_ROUNDED -> if (borders) THEME_ID_ROUNDED_BASE_BORDER else THEME_ID_ROUNDED_BASE
+                STYLE_EINK -> THEME_ID_LXX_BASE_BORDER
                 else -> if (borders) THEME_ID_LXX_BASE_BORDER else THEME_ID_LXX_BASE
             }
             return KEYBOARD_THEMES.firstOrNull { it.themeId == matchingId } ?: KEYBOARD_THEMES[DEFAULT_THEME_ID]
@@ -141,7 +148,9 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                 prefs.getString(Settings.PREF_THEME_COLORS, Defaults.PREF_THEME_COLORS)
             val themeStyle = prefs.getString(Settings.PREF_THEME_STYLE, Defaults.PREF_THEME_STYLE)
 
-            return getThemeColors(themeName!!, themeStyle!!, context, prefs, isNight)
+            val colors = getThemeColors(themeName!!, themeStyle!!, context, prefs, isNight)
+            if (themeStyle != STYLE_EINK) return colors
+            return EinkColors(colors.get(ColorType.KEY_TEXT), colors.get(ColorType.MAIN_BACKGROUND), EinkStyle.read(context, prefs))
         }
 
         private fun getThemeColors(themeName: String, themeStyle: String, context: Context, prefs: SharedPreferences, isNight: Boolean): Colors {
@@ -164,6 +173,8 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                     ContextCompat.getColor(context, R.color.key_hint_letter_color_lxx_light),
                     keyboardBackground = backgroundImage
                 )
+                THEME_EINK_WHITE -> einkPalette(themeStyle, hasBorders, Color.BLACK, Color.WHITE)
+                THEME_EINK_BLACK -> einkPalette(themeStyle, hasBorders, Color.WHITE, Color.BLACK)
                 THEME_DARK -> DefaultColors(
                     themeStyle,
                     hasBorders,
@@ -347,6 +358,9 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
                 }
             }
         }
+
+        private fun einkPalette(themeStyle: String, hasBorders: Boolean, foreground: Int, background: Int) =
+            DefaultColors(themeStyle, hasBorders, foreground, background, background, background, background, foreground, foreground)
 
         fun readUserColorTheme(themeStyle: String, hasBorders: Boolean, colorSettings: List<ColorSetting>, context: Context, isNight: Boolean, backgroundImage: Drawable?): Colors {
             return DefaultColors(
