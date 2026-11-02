@@ -11,6 +11,7 @@ data class EinkStyle(
     val antiAlias: Boolean,
     val invertPressedKey: Boolean,
     val labelWeight: Int = DEFAULT_LABEL_WEIGHT,
+    val monochromeEmoji: Boolean = DEFAULT_MONOCHROME_EMOJI,
 ) {
     companion object {
         const val PREF_BORDER_WIDTH = "eink_border_width"
@@ -18,12 +19,14 @@ data class EinkStyle(
         const val PREF_ANTIALIAS = "eink_antialias"
         const val PREF_INVERT_PRESSED_KEY = "eink_invert_pressed_key"
         const val PREF_LABEL_WEIGHT = "eink_label_weight"
+        const val PREF_MONOCHROME_EMOJI = "eink_monochrome_emoji"
 
         const val DEFAULT_BORDER_WIDTH_DP = 1.5f
         const val DEFAULT_CORNER_RADIUS_DP = 4f
         const val DEFAULT_ANTIALIAS = false
         const val DEFAULT_INVERT_PRESSED_KEY = false
         const val DEFAULT_LABEL_WEIGHT = 400
+        const val DEFAULT_MONOCHROME_EMOJI = true
 
         fun read(context: Context, prefs: SharedPreferences): EinkStyle {
             val metrics = context.resources.displayMetrics
@@ -34,6 +37,7 @@ data class EinkStyle(
                 antiAlias = prefs.getBoolean(PREF_ANTIALIAS, DEFAULT_ANTIALIAS),
                 invertPressedKey = prefs.getBoolean(PREF_INVERT_PRESSED_KEY, DEFAULT_INVERT_PRESSED_KEY),
                 labelWeight = prefs.getInt(PREF_LABEL_WEIGHT, DEFAULT_LABEL_WEIGHT),
+                monochromeEmoji = prefs.getBoolean(PREF_MONOCHROME_EMOJI, DEFAULT_MONOCHROME_EMOJI),
             )
         }
 

@@ -14,4 +14,8 @@
     <string name="eink_antialias_summary">Сглаживать края текста, иконок и рамок. Без сглаживания клавиатура остаётся строго чёрно-белой и чётче выглядит в быстрых режимах обновления.</string>
     <string name="eink_invert_pressed_key">Инвертировать нажатую клавишу</string>
     <string name="eink_invert_pressed_key_summary">Заливать клавишу, пока её держат. Если выключено, нажатие подтверждается только вибрацией.</string>
+    <string name="eink_monochrome_emoji">Ч/б эмодзи</string>
+    <string name="eink_monochrome_emoji_summary">Рисовать эмодзи в клавиатуре монохромным шрифтом. Эмодзи, которых в нём нет, переводятся в чёрно-белые. В приложении вставленные эмодзи остаются цветными.</string>
+    <string name="eink_attributions">Сторонние материалы</string>
+    <string name="eink_attributions_summary">Ч/б эмодзи: Noto Emoji от Google, SIL Open Font License 1.1.</string>
 </resources>

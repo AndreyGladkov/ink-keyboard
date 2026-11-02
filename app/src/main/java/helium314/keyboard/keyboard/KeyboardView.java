@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import helium314.keyboard.eink.EinkColors;
+import helium314.keyboard.eink.EinkEmoji;
 import helium314.keyboard.eink.EinkRendering;
 import helium314.keyboard.keyboard.emoji.EmojiPageKeyboardView;
 import helium314.keyboard.keyboard.internal.KeyDrawParams;
@@ -457,7 +458,11 @@ public class KeyboardView extends View {
                 paint.clearShadowLayer();
             }
             blendAlpha(paint, params.mAnimAlpha);
-            canvas.drawText(label, 0, label.length(), labelX, labelBaseline, paint);
+            final String displayLabel = EinkEmoji.displayText(getContext(), mColors, label);
+            if (EinkEmoji.needsThreshold(getContext(), mColors, displayLabel))
+                EinkEmoji.drawThresholded(canvas, displayLabel, labelX, labelBaseline, paint, paint.getColor());
+            else
+                canvas.drawText(displayLabel, 0, displayLabel.length(), labelX, labelBaseline, paint);
             // Turn off drop shadow and reset x-scale.
             paint.clearShadowLayer();
             paint.setTextScaleX(1.0f);
