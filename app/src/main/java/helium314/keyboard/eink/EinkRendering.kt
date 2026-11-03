@@ -29,6 +29,14 @@ object EinkRendering {
     @JvmStatic
     fun antiAlias(colors: Colors) = (colors as? EinkColors)?.style?.antiAlias ?: true
 
+    /**
+     * With hardware acceleration KeyboardView redraws every key on each key press; on a slow e-ink phone that
+     * costs over 10 ms per frame. Its offscreen buffer path redraws only the changed keys, which also keeps the
+     * rest of the panel untouched.
+     */
+    @JvmStatic
+    fun redrawsOnlyChangedKeys(colors: Colors) = colors is EinkColors
+
     @JvmStatic
     fun hintBorderInset(colors: Colors, context: Context): Float {
         if (colors !is EinkColors) return 0f

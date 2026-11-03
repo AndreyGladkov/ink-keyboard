@@ -20,8 +20,12 @@ class EinkLabelWeightTest {
         EinkStyle(borderWidthPx = 2f, cornerRadiusPx = 0f, antiAlias = false, invertPressedKey = false, labelWeight = weight),
     )
 
-    @Test fun defaultWeightKeepsTypeface() {
-        assertSame(Typeface.DEFAULT, EinkRendering.withLabelWeight(Typeface.DEFAULT, eink(EinkStyle.DEFAULT_LABEL_WEIGHT)))
+    @Test fun matchingWeightKeepsTypeface() {
+        assertSame(Typeface.DEFAULT, EinkRendering.withLabelWeight(Typeface.DEFAULT, eink(Typeface.DEFAULT.weight)))
+    }
+
+    @Test fun defaultLabelsAreMedium() {
+        assertEquals(500, EinkRendering.withLabelWeight(Typeface.DEFAULT, eink(EinkStyle.DEFAULT_LABEL_WEIGHT)).weight)
     }
 
     @Test fun otherStylesKeepTypeface() {

@@ -245,7 +245,7 @@ public class KeyboardView extends View {
     @Override
     protected void onDraw(@NonNull final Canvas canvas) {
         super.onDraw(canvas);
-        if (canvas.isHardwareAccelerated()) {
+        if (canvas.isHardwareAccelerated() && !EinkRendering.redrawsOnlyChangedKeys(mColors)) {
             onDrawKeyboard(canvas);
             return;
         }
