@@ -129,8 +129,8 @@ object EinkRendering {
     fun withLabelWeight(typeface: Typeface, colors: Colors?): Typeface {
         if (colors !is EinkColors || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return typeface
         val requested = colors.style.labelWeight
-        if (requested == EinkStyle.DEFAULT_LABEL_WEIGHT) return typeface
         val weight = if (typeface.isBold) maxOf(requested, BOLD_WEIGHT) else requested
+        if (weight == typeface.weight) return typeface
         return Typeface.create(typeface, weight, typeface.isItalic)
     }
 
