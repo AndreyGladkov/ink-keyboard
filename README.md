@@ -42,12 +42,11 @@ Ink Keyboard is a soft fork. Changes are kept small and isolated so upstream rel
 
 Ink Keyboard is licensed under the [GNU General Public License v3.0](LICENSE), like HeliBoard and OpenBoard.
 
-The app is based on the Apache 2.0 licensed AOSP Keyboard, so an [Apache 2.0](LICENSE-Apache-2.0) license file is included. The icon is licensed under [Creative Commons BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), see [LICENSE-CC-BY-SA-4.0](LICENSE-CC-BY-SA-4.0).
+The app is based on the Apache 2.0 licensed AOSP Keyboard, so an [Apache 2.0](LICENSE-Apache-2.0) license file is included.
 
 ## Credits
 
 - [HeliBoard](https://github.com/HeliBorg/HeliBoard) and its [contributors](https://github.com/HeliBorg/HeliBoard/graphs/contributors)
-- Icon by [Fabian OvrWrt](https://github.com/FabianOvrWrt) with contributions from [The Eclectic Dyslexic](https://github.com/the-eclectic-dyslexic)
 - [OpenBoard](https://github.com/openboard-team/openboard)
 - [AOSP Keyboard](https://android.googlesource.com/platform/packages/inputmethods/LatinIME/)
 - [LineageOS](https://review.lineageos.org/admin/repos/LineageOS/android_packages_inputmethods_LatinIME)
