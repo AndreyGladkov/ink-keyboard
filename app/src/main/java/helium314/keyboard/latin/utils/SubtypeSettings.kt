@@ -229,6 +229,10 @@ object SubtypeSettings {
             systemSubtypes.add(resourceSubtypesByLocale[Locale.US]!!.first())
         } else {
             systemSubtypes.addAll(subtypes)
+            // The globe key is shown by default but hides itself while only one language is enabled,
+            // so English is enabled next to the system language without any setup.
+            if (subtypes.none { it.locale().language == Locale.ENGLISH.language })
+                resourceSubtypesByLocale[Locale.US]?.firstOrNull()?.let { systemSubtypes.add(it) }
         }
         return systemSubtypes
     }
