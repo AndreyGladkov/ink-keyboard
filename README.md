@@ -23,7 +23,7 @@ Typing, dictionaries, layouts and the rest of the settings are HeliBoard's. Its 
 
 ## Building
 
-You need JDK 17 or newer, the Android SDK, and NDK `28.0.13004108`.
+You need JDK 21 or newer, the Android SDK, and NDK `28.0.13004108`.
 
 ```sh
 ./gradlew testRunTestsUnitTest   # unit tests
