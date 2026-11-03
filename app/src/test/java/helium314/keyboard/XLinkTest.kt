@@ -58,7 +58,7 @@ class XLinkTest { // Without the X, SubtypeTests fail with ClassCastException. W
         val internalLinkRegex = "app/src/\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&\\/\\/=]*)".toRegex()
         val links = internalLinkRegex.findAll(file.readText())
         links.forEach {
-            checkLink(it.value.replace("app/src", Links.GITHUB + "/blob/main/app/src"))
+            checkLink(it.value.replace("app/src", Links.GITHUB + "/blob/master/app/src"))
         }
     }
 
