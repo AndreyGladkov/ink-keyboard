@@ -18,4 +18,6 @@
     <string name="eink_monochrome_emoji_summary">Draw emoji in the keyboard with a monochrome font. Emoji missing from it are converted to black and white. Inserted emoji still appear in color in the app.</string>
     <string name="eink_attributions">Third-party content</string>
     <string name="eink_attributions_summary">Russian dictionary: Leipzig Corpora Collection (wortschatz.uni-leipzig.de), CC BY 4.0, built by the HeliBoard dictionaries project. Black and white emoji: Noto Emoji by Google, SIL Open Font License 1.1.</string>
+    <string name="eink_a9_clear_on_hide">Hisense A9: clear screen when keyboard hides</string>
+    <string name="eink_a9_clear_on_hide_summary">Run a full refresh to remove ghosting after the keyboard closes. Requires A9 Accessibility Service with “Allow Control via Broadcasts” enabled.</string>
 </resources>
