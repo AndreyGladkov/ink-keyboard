@@ -12,7 +12,9 @@ import helium314.keyboard.settings.Setting
 import helium314.keyboard.settings.preferences.SliderPreference
 import helium314.keyboard.settings.preferences.SwitchPreference
 
-fun einkAppearanceItems(prefs: SharedPreferences): List<String> = einkStyleItems(prefs) + A9ScreenClearer.PREF_CLEAR_ON_HIDE
+fun einkAppearanceItems(prefs: SharedPreferences): List<String> = einkStyleItems(prefs) + a9Items()
+
+private fun a9Items(): List<String> = if (HisenseA9.isCurrentDevice()) listOf(A9ScreenClearer.PREF_CLEAR_ON_HIDE) else emptyList()
 
 private fun einkStyleItems(prefs: SharedPreferences): List<String> =
     if (prefs.getString(Settings.PREF_THEME_STYLE, Defaults.PREF_THEME_STYLE) != KeyboardTheme.STYLE_EINK) emptyList()
