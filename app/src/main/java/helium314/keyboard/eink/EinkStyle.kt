@@ -25,7 +25,7 @@ data class EinkStyle(
         const val DEFAULT_CORNER_RADIUS_DP = 4f
         const val DEFAULT_ANTIALIAS = false
         const val DEFAULT_INVERT_PRESSED_KEY = false
-        const val DEFAULT_LABEL_WEIGHT = 400
+        const val DEFAULT_LABEL_WEIGHT = 500
         const val DEFAULT_MONOCHROME_EMOJI = true
 
         fun read(context: Context, prefs: SharedPreferences): EinkStyle {
