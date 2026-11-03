@@ -20,4 +20,6 @@
     <string name="eink_attributions_summary">Russian dictionary: Leipzig Corpora Collection (wortschatz.uni-leipzig.de), CC BY 4.0, built by the HeliBoard dictionaries project. Black and white emoji: Noto Emoji by Google, SIL Open Font License 1.1.</string>
     <string name="eink_a9_clear_on_hide">Hisense A9: clear screen when keyboard hides</string>
     <string name="eink_a9_clear_on_hide_summary">Run a full refresh to remove ghosting after the keyboard closes. Requires A9 Accessibility Service with “Allow Control via Broadcasts” enabled.</string>
+    <string name="eink_strip_emoji_key">Emoji key in the suggestion strip</string>
+    <string name="eink_strip_emoji_key_summary">Always shown at the left edge of the strip. On the emoji keyboard it switches back to letters.</string>
 </resources>
