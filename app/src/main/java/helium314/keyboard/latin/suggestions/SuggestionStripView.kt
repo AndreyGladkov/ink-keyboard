@@ -32,6 +32,7 @@ import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import helium314.keyboard.eink.EinkColors
 import helium314.keyboard.eink.EinkRendering
+import helium314.keyboard.eink.StripEmojiKey
 import helium314.keyboard.event.HapticEvent
 import helium314.keyboard.keyboard.KeyboardSwitcher
 import helium314.keyboard.keyboard.internal.KeyboardIconsSet
@@ -147,6 +148,7 @@ class SuggestionStripView(context: Context, attrs: AttributeSet?, defStyle: Int)
         colors.setBackground(toolbarExpandKey, ColorType.STRIP_BACKGROUND) // necessary because background is re-used for defaultToolbarBackground
         colors.setColor(toolbarExpandKey, ColorType.TOOL_BAR_EXPAND_KEY)
         colors.setColor(toolbarExpandKey.background, ColorType.TOOL_BAR_EXPAND_KEY_BACKGROUND)
+        StripEmojiKey.addTo(toolbarExpandKey.parent as ViewGroup, toolbarHeight, colors, this)
 
         // background indicator for pinned keys
         if (enabledToolKeyBackground is GradientDrawable) {

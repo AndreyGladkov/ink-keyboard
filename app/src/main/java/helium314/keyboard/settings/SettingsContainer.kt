@@ -10,6 +10,7 @@ import helium314.keyboard.settings.screens.createAboutSettings
 import helium314.keyboard.settings.screens.createAdvancedSettings
 import helium314.keyboard.eink.createEinkAboutSettings
 import helium314.keyboard.eink.createEinkAppearanceSettings
+import helium314.keyboard.eink.createEinkToolbarSettings
 import helium314.keyboard.settings.screens.createAppearanceSettings
 import helium314.keyboard.settings.screens.createCorrectionSettings
 import helium314.keyboard.settings.screens.createGestureTypingSettings
@@ -65,7 +66,7 @@ class Setting(
 
 // intentionally not putting individual debug settings in here so user knows the context
 private fun createSettings(context: Context) = createAboutSettings(context) + createEinkAboutSettings(context) + createAppearanceSettings(context) + createEinkAppearanceSettings(context) +
-        createCorrectionSettings(context) + createPreferencesSettings(context) + createToolbarSettings(context) +
+        createCorrectionSettings(context) + createPreferencesSettings(context) + createToolbarSettings(context) + createEinkToolbarSettings(context) +
         createLayoutSettings(context) + createAdvancedSettings(context) +
         if (JniUtils.sHaveGestureLib) createGestureTypingSettings(context) else emptyList()
 
