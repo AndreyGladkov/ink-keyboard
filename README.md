@@ -4,9 +4,7 @@ An Android keyboard for e-ink screens. Ink Keyboard is a fork of [HeliBoard](htt
 
 Regular keyboards are designed for LCD and OLED screens. On e-ink, their gray fills, shadows, key popups and animations cause ghosting and input lag. Ink Keyboard keeps the familiar AOSP keyboard and changes how it looks and behaves on e-ink panels.
 
-> **Status: early development.** The fork is set up and builds. Nothing on the list below is implemented yet. Until then the app behaves like HeliBoard 4.2.
-
-## Goals
+## Features
 
 - **"E-ink" style.** Keys are drawn as an outline and a label only. There are no fills, shadows or gradients.
   - Two schemes: black on white, and inverted (white on black).
@@ -16,8 +14,8 @@ Regular keyboards are designed for LCD and OLED screens. On e-ink, their gray fi
 - **Haptic feedback instead of visual.** Inverting the pressed key is available as an option.
 - **Black and white emoji** on the emoji panel, using [Noto Emoji](https://github.com/google/fonts/tree/main/ofl/notoemoji).
 - **Hisense A9 integration (optional).** A full screen refresh when the keyboard hides. It is sent through the broadcast API of [A9PatchingService](https://github.com/AndreyGladkov/A9PatchingService).
-- **Gesture typing (later).** It will use an open source decoder and draw no trail.
-- **Offline only.** The app has no internet permission.
+- **Gesture typing (planned).** It will use an open source decoder and draw no trail.
+- **Offline only.** The app has no internet permission, see the [privacy policy](PRIVACY.md).
 
 Typing, dictionaries, layouts and the rest of the settings are HeliBoard's. Its documentation applies: [layouts.md](layouts.md) and the [HeliBoard wiki](https://github.com/HeliBorg/HeliBoard/wiki).
 
