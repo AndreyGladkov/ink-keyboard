@@ -34,6 +34,26 @@ You need JDK 17 or newer, the Android SDK, and NDK `28.0.13004108`.
 
 Builds use the application id `io.github.andreygladkov.inkkeyboard`, so Ink Keyboard can be installed alongside HeliBoard.
 
+## Releasing
+
+Release builds are signed only when `local.properties` names the keystores; CI builds stay unsigned.
+
+```properties
+signing.github.storeFile=/path/to/ink-keyboard-github.jks
+signing.github.storePassword=...
+signing.github.keyAlias=github
+signing.github.keyPassword=...
+signing.playUpload.storeFile=/path/to/ink-keyboard-play-upload.jks
+signing.playUpload.storePassword=...
+signing.playUpload.keyAlias=playUpload
+signing.playUpload.keyPassword=...
+```
+
+- `./gradlew assembleRelease` produces the APK for GitHub Releases, signed with the `github` key.
+- `./gradlew bundleNouserlib` produces the bundle for Google Play, signed with the `playUpload` key.
+
+Store texts and screenshots live in `fastlane/metadata/android`.
+
 ## Relationship to HeliBoard
 
 Ink Keyboard is a soft fork. Changes are kept small and isolated so upstream releases can be merged regularly. Improvements that aren't specific to e-ink are proposed upstream, see [HeliBoard#969](https://github.com/HeliBorg/HeliBoard/issues/969). Please report issues in the Ink Keyboard repository first, not to HeliBoard.

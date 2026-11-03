@@ -1,4 +1,5 @@
 import com.android.build.api.variant.ApplicationVariant
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -6,8 +7,24 @@ plugins {
     kotlin("plugin.compose") version "2.4.0"
 }
 
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+}
+
 android {
     compileSdk = 37
+
+    signingConfigs {
+        listOf("github", "playUpload").forEach { name ->
+            val storeFile = localProperties.getProperty("signing.$name.storeFile") ?: return@forEach
+            create(name) {
+                this.storeFile = file(storeFile)
+                storePassword = localProperties.getProperty("signing.$name.storePassword")
+                keyAlias = localProperties.getProperty("signing.$name.keyAlias")
+                keyPassword = localProperties.getProperty("signing.$name.keyPassword")
+            }
+        }
+    }
 
     defaultConfig {
         applicationId = "io.github.andreygladkov.inkkeyboard"
@@ -24,12 +41,14 @@ android {
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("github")
             isMinifyEnabled = true
             isShrinkResources = false
             isDebuggable = false
             isJniDebuggable = false
         }
         create("nouserlib") { // same as release, but does not allow the user to provide a library
+            signingConfig = signingConfigs.findByName("playUpload")
             isMinifyEnabled = true
             isShrinkResources = false
             isDebuggable = false
