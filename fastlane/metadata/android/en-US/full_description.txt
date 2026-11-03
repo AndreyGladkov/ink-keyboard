@@ -1,30 +1,25 @@
-HeliBoard is a privacy-conscious open-source keyboard, based on AOSP / OpenBoard.
-Does not use internet permission, and thus is 100% offline.
+Ink Keyboard is a keyboard for phones and readers with e-ink screens. It is based on HeliBoard and the AOSP keyboard and keeps their typing engine, dictionaries and layouts, but draws everything the way an e-ink panel likes it.
 
-Features:
+<b>Made for e-ink</b>
 <ul>
-  <li>Add dictionaries for suggestions and spell check</li>
-  <ul>
-    <li>build your own, or get them  <a href="https://codeberg.org/Helium314/aosp-dictionaries#dictionaries">here</a>, or in the <a href="https://codeberg.org/Helium314/aosp-dictionaries#experimental-dictionaries">experimental</a> section (quality may vary)</li>
-    <li>additional dictionaries for emojis or scientific symbols can be used to provide suggestions (similar to "emoji search")</li>
-    <li>note that for Korean layouts, suggestions only work using <a href="https://github.com/openboard-team/openboard/commit/83fca9533c03b9fecc009fc632577226bbd6301f">this dictionary</a>, the tools in the dictionary repository are not able to create working dictionaries</li>
-  </ul>
-  <li>Customize keyboard themes (style, colors and background image)</li>
-  <ul>
-    <li>can follow the system's day/night setting on Android 10+ (and on some versions of Android 9)</li>
-    <li>can follow dynamic colors for Android 12+</li>
-  </ul>
-  <li>Customize keyboard <a href="https://github.com/HeliBorg/HeliBoard/blob/main/layouts.md">layouts</a> (only available when disabling <i>use system languages</i>)</li>
-  <li>Customize special layouts, like symbols, number,  or functional key layout</li>
-  <li>Multilingual typing</li>
-  <li>Glide typing (<i>only with closed source library</i> ☹️)</li>
-  <ul>
-    <li>library not included in the app, as there is no compatible open source library available</li>
-    <li>can be extracted from GApps packages ("<i>swypelibs</i>"), or downloaded <a href="https://github.com/erkserkserks/openboard/tree/46fdf2b550035ca69299ce312fa158e7ade36967/app/src/main/jniLibs">here</a> (click on the file and then "raw" or the tiny download button)</li>
-  </ul>
-  <li>Clipboard history</li>
-  <li>One-handed mode</li>
-  <li>Split keyboard (only available if the screen is large enough)</li>
-  <li>Number pad</li>
-  <li>Backup and restore your settings and learned word / history data</li>
+<li>Keys are drawn as an outline and a label only: no fills, shadows or gradients</li>
+<li>Pure black and white: text, icons and borders are rendered without antialiasing, so fast refresh modes stay crisp</li>
+<li>Black on white or white on black</li>
+<li>Adjustable border width, corner radius and label weight</li>
+<li>No key preview popups and no animations; long-press popups, emoji, clipboard and suggestions appear instantly</li>
+<li>Vibration confirms key presses; filling the pressed key is optional</li>
+<li>Black and white emoji on the emoji panel</li>
+<li>Hisense A9: optional full screen refresh after the keyboard closes (needs A9 Accessibility Service with broadcast control enabled)</li>
+</ul>
+
+<b>Private</b>
+<ul>
+<li>No internet permission: nothing you type leaves the device</li>
+<li>Open source under GPL-3.0</li>
+</ul>
+
+<b>From HeliBoard</b>
+<ul>
+<li>Dictionaries for 16 languages included, with an extended Russian one; more can be added from a file</li>
+<li>Many layouts, a number row, clipboard history, toolbar, one-handed mode</li>
 </ul>
