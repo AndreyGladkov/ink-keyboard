@@ -5,6 +5,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.Rect
+import android.graphics.RectF
+import android.graphics.Region
+import android.graphics.RegionIterator
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -19,6 +25,7 @@ import androidx.core.graphics.createBitmap
 import helium314.keyboard.keyboard.Key
 import helium314.keyboard.latin.common.Colors
 import java.util.WeakHashMap
+import kotlin.math.abs
 
 object EinkRendering {
     private const val ALPHA_THRESHOLD = 128
@@ -49,6 +56,75 @@ object EinkRendering {
     }
 
     private const val BOLD_WEIGHT = 700
+    private const val STEM_FIT_RANGE = 80
+    private const val STEM_FIT_STEP = 5
+    private val STEM_REFERENCES = listOf("l", "п", "н", "т")
+    private const val STEM_MEASURE_SCALE = 8f
+    private const val STEM_ROW = 0.3f
+    private const val STEM_TOLERANCE = 0.02f
+
+    private data class StemFit(val typeface: Typeface, val textSize: Float, val weight: Int)
+    private val stemFits = HashMap<StemFit, Typeface>()
+
+    /**
+     * Without antialiasing a stem covers as many pixels as pixel centers it contains, so a 5.5 px stem is drawn
+     * 5 or 6 px wide depending on its position and the two stems of "П" differ. A stem of integral width always
+     * covers the same number of pixels, so this sets the weight axis closest to the wanted weight at which the
+     * stem width at the paint's size is closest to an integer. System Roboto is a variable font without hinting
+     * instructions, so the axis is the only way to snap stems; Typeface.create only picks named instances.
+     */
+    @JvmStatic
+    fun fitStems(paint: Paint, colors: Colors) {
+        if (colors !is EinkColors || colors.style.antiAlias || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return
+        val base = paint.typeface ?: Typeface.DEFAULT
+        val wanted = if (base.isBold) maxOf(colors.style.labelWeight, BOLD_WEIGHT) else colors.style.labelWeight
+        val key = StemFit(base, paint.textSize, wanted)
+        // Setting variation settings on the paint creates a new typeface on every call, too slow for each key draw.
+        paint.typeface = synchronized(stemFits) { stemFits.getOrPut(key) { fittedTypeface(base, paint.textSize, wanted) } }
+    }
+
+    private fun fittedTypeface(base: Typeface, textSize: Float, wanted: Int): Typeface {
+        val probe = Paint().apply {
+            typeface = base
+            this.textSize = textSize * STEM_MEASURE_SCALE
+        }
+        var best: String? = null
+        var bestError = Float.MAX_VALUE
+        for (offset in 0..STEM_FIT_RANGE step STEM_FIT_STEP) {
+            for (weight in listOf(wanted - offset, wanted + offset).distinct()) {
+                if (weight !in 100..900) continue
+                val axis = "'wght' $weight"
+                if (!probe.setFontVariationSettings(axis)) return base
+                val stems = STEM_REFERENCES.flatMap { stemWidths(probe, it) }
+                if (stems.isEmpty()) return base
+                val error = stems.sumOf { abs(it - Math.round(it)).toDouble() }.toFloat() / stems.size
+                if (error < bestError - STEM_TOLERANCE) {
+                    best = axis
+                    bestError = error
+                }
+            }
+        }
+        probe.typeface = base
+        probe.fontVariationSettings = best
+        return probe.typeface ?: base
+    }
+
+    // Widths of the runs a horizontal line crosses in the upper part of the glyph, which for these
+    // references are the vertical stems; measured on the enlarged outline for sub-pixel precision.
+    private fun stemWidths(probe: Paint, text: String): List<Float> {
+        val path = Path()
+        probe.getTextPath(text, 0, text.length, 0f, 0f, path)
+        val bounds = RectF()
+        path.computeBounds(bounds, true)
+        val y = (bounds.top + bounds.height() * STEM_ROW).toInt()
+        val region = Region()
+        region.setPath(path, Region(bounds.left.toInt() - 1, y, bounds.right.toInt() + 1, y + 1))
+        val widths = ArrayList<Float>()
+        val iterator = RegionIterator(region)
+        val rect = Rect()
+        while (iterator.next(rect)) widths.add(rect.width() / STEM_MEASURE_SCALE)
+        return widths
+    }
 
     fun withLabelWeight(typeface: Typeface, colors: Colors?): Typeface {
         if (colors !is EinkColors || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return typeface

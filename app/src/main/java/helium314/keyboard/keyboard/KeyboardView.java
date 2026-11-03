@@ -400,6 +400,7 @@ public class KeyboardView extends View {
         if (label != null) {
             paint.setTypeface(KeyboardTypeface.resolve(label, key.selectTypeface(params)));
             paint.setTextSize(key.selectTextSize(params) * mFontSizeMultiplier);
+            if (!StringUtilsKt.isEmoji(label)) EinkRendering.fitStems(paint, mColors);
             final float labelCharHeight = TypefaceUtils.getReferenceCharHeight(paint);
             final float labelCharWidth = TypefaceUtils.getReferenceCharWidth(paint);
 
@@ -477,6 +478,7 @@ public class KeyboardView extends View {
             paint.setColor(EinkRendering.isInverted(mColors, key) ? ((EinkColors) mColors).contentColor(true) : key.selectHintTextColor(params));
             // TODO: Should add a way to specify type face for hint letters
             paint.setTypeface(KeyboardTypeface.resolve(hintLabel, Typeface.DEFAULT_BOLD));
+            EinkRendering.fitStems(paint, mColors);
             blendAlpha(paint, params.mAnimAlpha);
             final float labelCharHeight = TypefaceUtils.getReferenceCharHeight(paint);
             final float labelCharWidth = TypefaceUtils.getReferenceCharWidth(paint);
