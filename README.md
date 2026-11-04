@@ -50,7 +50,17 @@ signing.playUpload.keyPassword=...
 - `./gradlew assembleRelease` produces the APK for GitHub Releases, signed with the `github` key.
 - `./gradlew bundleNouserlib` produces the bundle for Google Play, signed with the `playUpload` key.
 
-Store texts and screenshots live in `fastlane/metadata/android`.
+Store texts and screenshots live in `fastlane/metadata/android`. Changelogs are named after the `versionCode`, e.g. `changelogs/4201.txt`.
+
+### Version codes
+
+`versionCode` is Ink Keyboard's own and only goes up: raise it for every release (4201 was the first after 4.2-ink.1, then 4202, 4203, …). Changelogs are named after it.
+
+`HELIBOARD_VERSION_CODE` in `app/build.gradle.kts` is the `versionCode` of the HeliBoard release the fork is based on. Settings migrations in `AppUpgrade.kt` are inherited from HeliBoard and run as `if (oldVersion <= N)` with HeliBoard codes, so they compare against this value, which the settings store as `heliboard_version_code`.
+
+- When merging a HeliBoard release, set `HELIBOARD_VERSION_CODE` to its `versionCode`. The new migrations then run once for Ink Keyboard users, whether or not `versionCode` changes in the same build.
+- Merge HeliBoard releases, not commits between them. Upstream gates a new migration on the previous release's code while `versionCode` is already past it (the `oldVersion <= 4005` block landed with `versionCode = 4006`), so settings stored with a mid-cycle code would skip the migrations added later in that cycle.
+- Settings without `heliboard_version_code` come either from a HeliBoard backup, where `version_code` is a HeliBoard code, or from 4.2-ink.1, which stored `version_code = 1` and is treated as HeliBoard 4201.
 
 ## Relationship to HeliBoard
 

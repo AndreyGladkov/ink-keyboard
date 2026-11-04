@@ -30,8 +30,10 @@ android {
         applicationId = "io.github.andreygladkov.inkkeyboard"
         minSdk = 21
         targetSdk = 37
-        versionCode = 1
-        versionName = "4.2-ink.1"
+        versionCode = 4201
+        versionName = "4.2-ink.2"
+        // versionCode of the merged HeliBoard release: settings migrations in AppUpgrade.kt are gated on it, see README
+        buildConfigField("int", "HELIBOARD_VERSION_CODE", "4201")
         ndk {
             abiFilters.clear()
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
