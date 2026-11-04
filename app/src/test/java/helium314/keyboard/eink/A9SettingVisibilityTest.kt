@@ -8,30 +8,31 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowBuild
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class A9SettingVisibilityTest {
     private val prefs = ApplicationProvider.getApplicationContext<Application>().prefs()
 
-    private fun showsClearSetting() = A9ScreenClearer.PREF_CLEAR_ON_HIDE in einkAppearanceItems(prefs)
+    private val a9Settings = listOf(A9PanelController.PREF_SPEED_WHILE_TYPING, A9PanelController.PREF_CLEAR_ON_HIDE)
+
+    private fun shownA9Settings() = einkAppearanceItems(prefs).filter { it in a9Settings }
 
     @Test fun shownOnHisenseA9() {
         ShadowBuild.setModel("HLTE556N")
         ShadowBuild.setDevice("HLTE556N")
-        assertTrue(showsClearSetting())
+        assertEquals(a9Settings, shownA9Settings())
     }
 
     @Test fun shownWhenOnlyDeviceMatches() {
         ShadowBuild.setModel("TrebleDroid")
         ShadowBuild.setDevice("hlte556n")
-        assertTrue(showsClearSetting())
+        assertEquals(a9Settings, shownA9Settings())
     }
 
     @Test fun hiddenOnOtherDevices() {
         ShadowBuild.setModel("Pixel 8")
         ShadowBuild.setDevice("shiba")
-        assertFalse(showsClearSetting())
+        assertEquals(emptyList(), shownA9Settings())
     }
 }
