@@ -2,4 +2,3 @@ First release, based on HeliBoard 4.2.
 • E-ink style: outline keys, pure black and white rendering, no animations
 • Black and white emoji
 • Hisense A9: clear the screen after the keyboard closes
-• Russian dictionary with next-word suggestions

@@ -17,7 +17,7 @@
     <string name="eink_monochrome_emoji">Ч/б эмодзи</string>
     <string name="eink_monochrome_emoji_summary">Рисовать эмодзи в клавиатуре монохромным шрифтом. Эмодзи, которых в нём нет, переводятся в чёрно-белые. В приложении вставленные эмодзи остаются цветными.</string>
     <string name="eink_attributions">Сторонние материалы</string>
-    <string name="eink_attributions_summary">Русский словарь: Leipzig Corpora Collection (wortschatz.uni-leipzig.de), CC BY 4.0, собран проектом словарей HeliBoard. Ч/б эмодзи: Noto Emoji от Google, SIL Open Font License 1.1.</string>
+    <string name="eink_attributions_summary">Ч/б эмодзи: Noto Emoji от Google, SIL Open Font License 1.1.</string>
     <string name="eink_a9_clear_on_hide">Hisense A9: очищать экран при скрытии клавиатуры</string>
     <string name="eink_a9_clear_on_hide_summary">Делать полное обновление экрана после закрытия клавиатуры, чтобы убрать остаточное изображение. Нужен A9 Accessibility Service с включённым «Allow Control via Broadcasts».</string>
     <string name="eink_strip_emoji_key">Кнопка эмодзи в полосе подсказок</string>

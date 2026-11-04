@@ -20,6 +20,6 @@ Ink Keyboard is a keyboard for phones and readers with e-ink screens. It is base
 
 <b>From HeliBoard</b>
 <ul>
-<li>Dictionaries for 16 languages included, with an extended Russian one; more can be added from a file</li>
+<li>Dictionaries for 16 languages included; more can be added from a file</li>
 <li>Many layouts, a number row, clipboard history, toolbar, one-handed mode</li>
 </ul>

@@ -71,5 +71,4 @@ The app is based on the Apache 2.0 licensed AOSP Keyboard, so an [Apache 2.0](LI
 - [Simple Keyboard](https://github.com/rkkr/simple-keyboard)
 - [Indic Keyboard](https://gitlab.com/indicproject/indic-keyboard)
 - [FlorisBoard](https://github.com/florisboard/florisboard/)
-- Russian dictionary: [Leipzig Corpora Collection](https://wortschatz.uni-leipzig.de/), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), built by the [HeliBoard dictionaries](https://codeberg.org/Helium314/aosp-dictionaries) project
 - Black and white emoji: [Noto Emoji](https://github.com/google/fonts/tree/main/ofl/notoemoji) by Google, [SIL Open Font License 1.1](app/src/main/assets/fonts/NotoEmoji-OFL.txt)
