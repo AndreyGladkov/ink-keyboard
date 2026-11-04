@@ -62,13 +62,21 @@ class DefaultBottomRowTest {
         assertEquals(','.code, bottomRow[globe + 1])
     }
 
-    @Test fun emojiKeyIsShownBetweenPeriodAndEnterByDefault() {
+    @Test fun emojiKeyIsShownLeftOfSpaceByDefault() {
         withSystemLanguage("ru")
         val bottomRow = bottomRow(buildRussianLetters())
         val emoji = bottomRow.indexOf(KeyCode.EMOJI)
         assertTrue(emoji >= 0, "no emoji key in $bottomRow")
-        assertEquals('.'.code, bottomRow[emoji - 1])
-        assertEquals(bottomRow.lastIndex, emoji + 1, "emoji key is not next to the action key in $bottomRow")
+        assertEquals(listOf(','.code, KeyCode.EMOJI, ' '.code), bottomRow.subList(emoji - 1, emoji + 2))
+    }
+
+    @Test fun emojiKeyMovesNextToEnter() {
+        withSystemLanguage("ru")
+        latinIME.prefs().edit { putString(EmojiKeyPosition.PREF, EmojiKeyPosition.RIGHT) }
+        Settings.getInstance().loadSettings(latinIME)
+        val bottomRow = bottomRow(buildRussianLetters())
+        assertEquals(1, bottomRow.count { it == KeyCode.EMOJI }, "$bottomRow")
+        assertEquals(listOf('.'.code, KeyCode.EMOJI), bottomRow.subList(bottomRow.size - 3, bottomRow.size - 1))
     }
 
     private fun bottomRow(keyboard: Keyboard): List<Int> {

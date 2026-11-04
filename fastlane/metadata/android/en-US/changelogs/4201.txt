@@ -1,5 +1,5 @@
 • Crisper key labels: even stroke width without antialiasing, medium weight by default
-• Emoji key in the bottom row, next to Enter
+• Emoji key on by default, left of the space bar or next to Enter
 • Globe key on by default, switches languages; English is enabled next to the system language
 • Hisense A9: fast refresh mode while typing
 • The built-in Russian dictionary is HeliBoard's again; a larger one can be added from a file
