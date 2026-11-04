@@ -3,6 +3,7 @@ package helium314.keyboard.latin
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.core.content.edit
 import helium314.keyboard.compat.isDeviceLocked
 import helium314.keyboard.compat.isUserLocked
@@ -55,8 +56,11 @@ import kotlin.collections.set
 fun checkVersionUpgrade(context: Context) {
     val prefs = context.prefs()
     val oldVersion = prefs.getInt(Settings.PREF_VERSION_CODE, 0)
-    if (oldVersion != BuildConfig.VERSION_CODE)
+    val oldHeliBoardVersion = prefs.getInt(PREF_HELIBOARD_VERSION_CODE, 0)
+    if (oldVersion != BuildConfig.VERSION_CODE || oldHeliBoardVersion != BuildConfig.HELIBOARD_VERSION_CODE) {
         AppUpgrade.onUpgrade(context)
+        prefs.edit { putInt(PREF_HELIBOARD_VERSION_CODE, BuildConfig.HELIBOARD_VERSION_CODE) }
+    }
 }
 
 fun transferOldPinnedClips(context: Context) {
@@ -80,10 +84,25 @@ fun transferOldPinnedClips(context: Context) {
     }
 }
 
+// Ink Keyboard numbers its versions on its own, while the migrations below are inherited from HeliBoard and compare
+// against HeliBoard version codes. So the settings remember the HeliBoard version whose format they are in.
+// Backups made by HeliBoard have only version_code, which is a HeliBoard code there. 4.2-ink.1 stored no HeliBoard
+// version and version_code 1 while its settings were in the format of HeliBoard 4201; every HeliBoard release has a
+// version code of at least 1000 (only unreleased commits before 1.0-alpha1 stored 19), so a lower one means that release.
+internal fun settingsHeliBoardVersion(prefs: SharedPreferences): Int {
+    if (prefs.contains(PREF_HELIBOARD_VERSION_CODE))
+        return prefs.getInt(PREF_HELIBOARD_VERSION_CODE, 0)
+    val versionCode = prefs.getInt(Settings.PREF_VERSION_CODE, 0)
+    return if (versionCode in 1..<1000) FIRST_INK_RELEASE_HELIBOARD_VERSION else versionCode
+}
+
+internal const val PREF_HELIBOARD_VERSION_CODE = "heliboard_version_code"
+private const val FIRST_INK_RELEASE_HELIBOARD_VERSION = 4201
+
 private object AppUpgrade {
     fun onUpgrade(context: Context) {
         val prefs = context.prefs()
-        val oldVersion = prefs.getInt(Settings.PREF_VERSION_CODE, 0)
+        val oldVersion = settingsHeliBoardVersion(prefs)
         if (oldVersion == 0) {
             // fresh install -> no need to upgrade, as this does things like keeping old defaults which is on wanted on actual upgrade
             prefs.edit { putInt(Settings.PREF_VERSION_CODE, BuildConfig.VERSION_CODE) }
