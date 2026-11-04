@@ -31,7 +31,7 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(shadows = [ShadowInputMethodManager2::class, ShadowProximityInfo::class])
-class GlobeKeyTest {
+class DefaultBottomRowTest {
     private val latinIME = Robolectric.setupService(LatinIME::class.java)
 
     private fun withSystemLanguage(qualifiers: String) {
@@ -60,6 +60,23 @@ class GlobeKeyTest {
         val globe = bottomRow.indexOf(KeyCode.LANGUAGE_SWITCH)
         assertTrue(globe >= 0, "no globe in $bottomRow")
         assertEquals(','.code, bottomRow[globe + 1])
+    }
+
+    @Test fun emojiKeyIsShownLeftOfSpaceByDefault() {
+        withSystemLanguage("ru")
+        val bottomRow = bottomRow(buildRussianLetters())
+        val emoji = bottomRow.indexOf(KeyCode.EMOJI)
+        assertTrue(emoji >= 0, "no emoji key in $bottomRow")
+        assertEquals(listOf(','.code, KeyCode.EMOJI, ' '.code), bottomRow.subList(emoji - 1, emoji + 2))
+    }
+
+    @Test fun emojiKeyMovesNextToEnter() {
+        withSystemLanguage("ru")
+        latinIME.prefs().edit { putString(EmojiKeyPosition.PREF, EmojiKeyPosition.RIGHT) }
+        Settings.getInstance().loadSettings(latinIME)
+        val bottomRow = bottomRow(buildRussianLetters())
+        assertEquals(1, bottomRow.count { it == KeyCode.EMOJI }, "$bottomRow")
+        assertEquals(listOf('.'.code, KeyCode.EMOJI), bottomRow.subList(bottomRow.size - 3, bottomRow.size - 1))
     }
 
     private fun bottomRow(keyboard: Keyboard): List<Int> {

@@ -196,6 +196,8 @@ data class VariationSelector(
  * Note that the conditions are checked in order as given below, and the first non-null AbstractKeyData is selected.
  *
  * @property emojiKeyEnabled The key data to use if [KeyboardId.emojiKeyEnabled] is true.
+ * @property emojiKeyLeft The key data to use if [KeyboardId.emojiKeyEnabled] is true and [KeyboardId.emojiKeyOnRight] is false.
+ * @property emojiKeyRight The key data to use if [KeyboardId.emojiKeyEnabled] and [KeyboardId.emojiKeyOnRight] are true.
  * @property languageKeyEnabled The key data to use if [KeyboardId.languageSwitchKeyEnabled] is true.
  * @property symbols The key data to use if [KeyboardId.element] is [KeyboardElement.SYMBOLS].
  * @property moreSymbols The key data to use if [KeyboardId.element] is [KeyboardElement.SYMBOLS_SHIFTED].
@@ -208,6 +210,8 @@ data class VariationSelector(
 @SerialName("keyboard_state_selector")
 class KeyboardStateSelector(
     val emojiKeyEnabled: AbstractKeyData? = null,
+    val emojiKeyLeft: AbstractKeyData? = null,
+    val emojiKeyRight: AbstractKeyData? = null,
     val languageKeyEnabled: AbstractKeyData? = null,
     val dpadKeyEnabled: AbstractKeyData? = null,
     val symbols: AbstractKeyData? = null,
@@ -220,6 +224,10 @@ class KeyboardStateSelector(
     override fun compute(params: KeyboardParams, isPopup: Boolean): KeyData? {
         if (params.mId.emojiKeyEnabled)
             emojiKeyEnabled?.compute(params)?.let { return it }
+        if (params.mId.emojiKeyEnabled && !params.mId.emojiKeyOnRight)
+            emojiKeyLeft?.compute(params)?.let { return it }
+        if (params.mId.emojiKeyEnabled && params.mId.emojiKeyOnRight)
+            emojiKeyRight?.compute(params)?.let { return it }
         if (params.mId.languageSwitchKeyEnabled)
             languageKeyEnabled?.compute(params)?.let { return it }
         if (params.mId.dpadKeyEnabled)

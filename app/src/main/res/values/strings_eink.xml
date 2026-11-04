@@ -20,8 +20,9 @@
     <string name="eink_attributions_summary">Black and white emoji: Noto Emoji by Google, SIL Open Font License 1.1.</string>
     <string name="eink_a9_clear_on_hide">Hisense A9: clear screen when keyboard hides</string>
     <string name="eink_a9_clear_on_hide_summary">Run a full refresh to remove ghosting after the keyboard closes. Requires A9 Accessibility Service with “Allow Control via Broadcasts” enabled.</string>
-    <string name="eink_strip_emoji_key">Emoji key in the suggestion strip</string>
-    <string name="eink_strip_emoji_key_summary">Always shown at the left edge of the strip. On the emoji keyboard it switches back to letters.</string>
     <string name="eink_a9_speed_while_typing">Hisense A9: fast refresh while typing</string>
     <string name="eink_a9_speed_while_typing_summary">Switch the panel to Speed mode while the keyboard is shown and restore the app\'s mode afterwards. Requires A9 Accessibility Service 3.8.1-colors.2 or newer with “Allow Control via Broadcasts” enabled.</string>
+    <string name="eink_emoji_key_position">Emoji key position</string>
+    <string name="eink_emoji_key_left">Left of the space bar</string>
+    <string name="eink_emoji_key_right">Next to Enter</string>
 </resources>
