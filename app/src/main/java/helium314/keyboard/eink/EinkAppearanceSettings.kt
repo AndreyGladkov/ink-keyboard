@@ -14,7 +14,7 @@ import helium314.keyboard.settings.preferences.SwitchPreference
 
 fun einkAppearanceItems(prefs: SharedPreferences): List<String> = einkStyleItems(prefs) + a9Items()
 
-private fun a9Items(): List<String> = if (HisenseA9.isCurrentDevice()) listOf(A9ScreenClearer.PREF_CLEAR_ON_HIDE) else emptyList()
+private fun a9Items(): List<String> = if (HisenseA9.isCurrentDevice()) listOf(A9PanelController.PREF_SPEED_WHILE_TYPING, A9PanelController.PREF_CLEAR_ON_HIDE) else emptyList()
 
 private fun einkStyleItems(prefs: SharedPreferences): List<String> =
     if (prefs.getString(Settings.PREF_THEME_STYLE, Defaults.PREF_THEME_STYLE) != KeyboardTheme.STYLE_EINK) emptyList()
@@ -66,8 +66,11 @@ fun createEinkAppearanceSettings(context: Context) = listOf(
     Setting(context, EinkStyle.PREF_MONOCHROME_EMOJI, R.string.eink_monochrome_emoji, R.string.eink_monochrome_emoji_summary) {
         SwitchPreference(it, EinkStyle.DEFAULT_MONOCHROME_EMOJI) { reloadKeyboardTheme() }
     },
-    Setting(context, A9ScreenClearer.PREF_CLEAR_ON_HIDE, R.string.eink_a9_clear_on_hide, R.string.eink_a9_clear_on_hide_summary) {
-        SwitchPreference(it, A9ScreenClearer.DEFAULT_CLEAR_ON_HIDE)
+    Setting(context, A9PanelController.PREF_SPEED_WHILE_TYPING, R.string.eink_a9_speed_while_typing, R.string.eink_a9_speed_while_typing_summary) {
+        SwitchPreference(it, A9PanelController.DEFAULT_SPEED_WHILE_TYPING)
+    },
+    Setting(context, A9PanelController.PREF_CLEAR_ON_HIDE, R.string.eink_a9_clear_on_hide, R.string.eink_a9_clear_on_hide_summary) {
+        SwitchPreference(it, A9PanelController.DEFAULT_CLEAR_ON_HIDE)
     },
 )
 
