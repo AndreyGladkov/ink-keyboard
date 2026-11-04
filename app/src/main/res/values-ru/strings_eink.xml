@@ -20,8 +20,6 @@
     <string name="eink_attributions_summary">Ч/б эмодзи: Noto Emoji от Google, SIL Open Font License 1.1.</string>
     <string name="eink_a9_clear_on_hide">Hisense A9: очищать экран при скрытии клавиатуры</string>
     <string name="eink_a9_clear_on_hide_summary">Делать полное обновление экрана после закрытия клавиатуры, чтобы убрать остаточное изображение. Нужен A9 Accessibility Service с включённым «Allow Control via Broadcasts».</string>
-    <string name="eink_strip_emoji_key">Кнопка эмодзи в полосе подсказок</string>
-    <string name="eink_strip_emoji_key_summary">Всегда видна у левого края полосы. На клавиатуре эмодзи возвращает к буквам.</string>
     <string name="eink_a9_speed_while_typing">Hisense A9: быстрый режим во время набора</string>
     <string name="eink_a9_speed_while_typing_summary">Переключать панель в режим Speed, пока клавиатура открыта, и возвращать режим приложения после закрытия. Нужен A9 Accessibility Service 3.8.1-colors.2 или новее с включённым «Allow Control via Broadcasts».</string>
 </resources>
