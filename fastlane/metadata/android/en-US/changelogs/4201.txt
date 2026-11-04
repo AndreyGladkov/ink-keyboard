@@ -3,3 +3,4 @@
 • Globe key on by default, switches languages; English is enabled next to the system language
 • Hisense A9: fast refresh mode while typing
 • The built-in Russian dictionary is HeliBoard's again; a larger one can be added from a file
+• Line along the top edge of the keyboard, separating it from the app
