@@ -263,6 +263,8 @@ class LocaleKeyboardInfos(dataStream: InputStream?, locale: Locale) {
                 return dram
             if (locale.language == "tr")
                 return lira
+            if (locale.language == "zh")
+                return yuan
             if (locale.language == "ru" || locale.language == "xdq")
                 return ruble
             if (locale.country == "LK" || locale.country == "BD")
@@ -319,6 +321,7 @@ class LocaleKeyboardInfos(dataStream: InputStream?, locale: Locale) {
         private val pound = "£" to listOf("€", "¥", "$", "¢", "₱")
         private val ruble = "₽" to listOf("€", "$", "£", "¥", "₱")
         private val lira = "₺" to listOf("€", "$", "£", "¥", "₱")
+        private val yuan = "¥" to listOf("$", "€", "£", "¢", "₱")
         private val dollar = "$" to listOf("£", "¢", "€", "¥", "₱")
         private val euroCountries = "AD|AT|BE|BG|HR|CY|CZ|DA|EE|FI|FR|DE|GR|HU|IE|IT|XK|LV|LT|LU|MT|MO|ME|NL|PL|PT|RO|SM|SK|SI|ES|VA".toRegex()
         private val euroLocales = "bg|ca|cs|da|de|el|en|es|et|eu|fi|fr|ga|gl|hr|hu|it|lb|lt|lv|mt|nl|pl|pt|ro|sk|sl|sq|sr|sv".toRegex()
