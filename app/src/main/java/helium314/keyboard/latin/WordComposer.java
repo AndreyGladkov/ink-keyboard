@@ -223,6 +223,10 @@ public final class WordComposer {
         mAutoCorrection = null;
     }
 
+    public int getCursorPositionWithinWord() {
+        return mCursorPositionWithinWord;
+    }
+
     public void setCursorPositionWithinWord(final int posWithinWord) {
         mCursorPositionWithinWord = posWithinWord;
         // TODO: compute where that puts us inside the events

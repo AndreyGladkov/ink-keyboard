@@ -14,6 +14,7 @@ Regular keyboards are designed for LCD and OLED screens. On e-ink, their gray fi
 - **Haptic feedback instead of visual.** Inverting the pressed key is available as an option.
 - **Black and white emoji** on the emoji panel, using [Noto Emoji](https://github.com/google/fonts/tree/main/ofl/notoemoji).
 - **Hisense A9 integration (optional).** A full screen refresh when the keyboard hides. It is sent through the broadcast API of [A9PatchingService](https://github.com/AndreyGladkov/A9PatchingService).
+- **Simplified Chinese (Pinyin).** Pinyin turns into characters on the suggestion strip, without a separate keyboard app. Space takes the first candidate, a whole sentence when it fits, and initials work as abbreviations (`nh` → 你好). Enter types the letters as they are.
 - **Gesture typing (planned).** It will use an open source decoder and draw no trail.
 - **Offline only.** The app has no internet permission, see the [privacy policy](PRIVACY.md).
 
@@ -81,4 +82,5 @@ The app is based on the Apache 2.0 licensed AOSP Keyboard, so an [Apache 2.0](LI
 - [Simple Keyboard](https://github.com/rkkr/simple-keyboard)
 - [Indic Keyboard](https://gitlab.com/indicproject/indic-keyboard)
 - [FlorisBoard](https://github.com/florisboard/florisboard/)
+- Pinyin lexicon: derived from [AOSP PinyinIME](https://android.googlesource.com/platform/packages/inputmethods/PinyinIME/) (Apache 2.0) by `tools/make-pinyin-dict.py`
 - Black and white emoji: [Noto Emoji](https://github.com/google/fonts/tree/main/ofl/notoemoji) by Google, [SIL Open Font License 1.1](app/src/main/assets/fonts/NotoEmoji-OFL.txt)

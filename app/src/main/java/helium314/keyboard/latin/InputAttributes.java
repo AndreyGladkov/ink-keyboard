@@ -34,6 +34,7 @@ public final class InputAttributes {
     final public boolean mIsPasswordField;
     final public boolean mShouldShowSuggestions;
     final public boolean mMayOverrideShowingSuggestions;
+    final public boolean mMayConvertPinyin;
     final public boolean mApplicationSpecifiedCompletionOn;
     final public boolean mShouldInsertSpacesAutomatically;
     final public boolean mShouldShowVoiceInputKey;
@@ -75,6 +76,7 @@ public final class InputAttributes {
             }
             mShouldShowSuggestions = false;
             mMayOverrideShowingSuggestions = false;
+            mMayConvertPinyin = false;
             mInputTypeShouldAutoCorrect = false;
             mApplicationSpecifiedCompletionOn = false;
             mShouldInsertSpacesAutomatically = false;
@@ -95,6 +97,7 @@ public final class InputAttributes {
         // Make sure that passwords are not displayed in {@link SuggestionStripView}.
         mShouldShowSuggestions = !mIsPasswordField && !flagNoSuggestions;
         mMayOverrideShowingSuggestions = !mIsPasswordField;
+        mMayConvertPinyin = !mIsPasswordField && !InputTypeUtils.isEmailVariation(variation);
 
         mShouldInsertSpacesAutomatically = InputTypeUtils.isAutoSpaceFriendlyType(mInputType);
 

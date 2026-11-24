@@ -54,6 +54,7 @@ import helium314.keyboard.latin.common.StringUtils;
 import helium314.keyboard.latin.common.StringUtilsKt;
 import helium314.keyboard.latin.common.SuggestionSpanUtilsKt;
 import helium314.keyboard.latin.define.DebugFlags;
+import helium314.keyboard.latin.pinyin.Pinyin;
 import helium314.keyboard.latin.settings.Settings;
 import helium314.keyboard.latin.settings.SettingsValues;
 import helium314.keyboard.latin.settings.SpacingAndPunctuations;
@@ -74,6 +75,7 @@ import helium314.keyboard.latin.utils.TextRange;
 import helium314.keyboard.latin.utils.TimestampKt;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -84,6 +86,7 @@ import java.util.concurrent.TimeUnit;
 public final class InputLogic {
     private static final String TAG = InputLogic.class.getSimpleName();
     private static final char INLINE_EMOJI_SEARCH_MARKER = ':';
+    private static final String URL_PUNCTUATION = ".:/@?#&=";
     private static final int[] EMPTY_CODE_POINTS = new int[0];
 
     // TODO : Remove this member when we can.
@@ -171,6 +174,9 @@ public final class InputLogic {
             StatsUtils.onWordCommitUserTyped(mWordComposer.getTypedWord(), mWordComposer.isBatchMode());
         }
         mWordComposer.restartCombining(combiningSpec);
+        if (Pinyin.COMBINING_SPEC.equals(combiningSpec)) {
+            Pinyin.preload(mLatinIME);
+        }
         resetComposingState(true /* alsoResetLastComposedWord */);
         mDeleteCount = 0;
         mSpaceState = SpaceState.NONE;
@@ -244,7 +250,10 @@ public final class InputLogic {
         mConnection.beginBatchEdit();
         if (GestureDataGatheringKt.useBackgroundGathering && mConnection.hasSelection())
             BackgroundGatheringCache.INSTANCE.onEditSelection(mConnection.getSelectedText(0), mConnection.getTextBeforeCursor(40, 0), mConnection.getTextAfterCursor(40, 0));
-        if (mWordComposer.isComposingWord()) {
+        if (mWordComposer.isComposingWord() && isPinyinInput()) {
+            commitPinyinText(Pinyin.convert(mLatinIME, mWordComposer.getTypedWord()));
+            addToHistoryIfEmoji(rawText, settingsValues);
+        } else if (mWordComposer.isComposingWord()) {
             if (mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
                 if (GestureDataGatheringKt.useBackgroundGathering)
                     BackgroundGatheringCache.INSTANCE.onEditWord(mWordComposer.getTypedWord());
@@ -303,6 +312,9 @@ public final class InputLogic {
             // Rely on onCodeInput to do the complicated swapping/stripping logic consistently.
             Event event = Event.createPunctuationSuggestionPickedEvent(suggestionInfo);
             return onCodeInput(settingsValues, event, keyboardCapsMode, currentKeyboardScript, handler);
+        }
+        if (suggestionInfo instanceof Pinyin.CandidateInfo candidate && isComposingPinyin()) {
+            return pickPinyinCandidate(settingsValues, candidate, keyboardCapsMode, handler);
         }
         if (GestureDataGatheringKt.useBackgroundGathering) {
             if (mWordComposer.isBatchMode())
@@ -459,6 +471,9 @@ public final class InputLogic {
             // position so that it can update its caches.
             mConnection.resetCachesUponCursorMoveAndReturnSuccess(
                     newSelStart, newSelEnd, false /* shouldFinishComposition */);
+            if (isComposingPinyin()) {
+                restorePinyinComposingRegion();
+            }
         }
 
         // The cursor has been moved : we now accept to perform recapitalization
@@ -935,7 +950,10 @@ public final class InputLogic {
      */
     private void handleNonFunctionalEvent(final Event event, final InputTransaction inputTransaction, final LatinIME.UIHandler handler) {
         inputTransaction.setDidAffectContents();
-        if (event.getCodePoint() == Constants.CODE_ENTER) {
+        if (event.getCodePoint() == Constants.CODE_ENTER && isComposingPinyin()) {
+            commitPinyinText(mWordComposer.getTypedWord());
+            inputTransaction.setRequiresUpdateSuggestions();
+        } else if (event.getCodePoint() == Constants.CODE_ENTER) {
             final EditorInfo editorInfo = getCurrentInputEditorInfo();
             final int imeOptionsActionId = InputTypeUtils.getImeOptionsActionIdFromEditorInfo(editorInfo);
             if (InputTypeUtils.IME_ACTION_CUSTOM_LABEL == imeOptionsActionId) {
@@ -978,6 +996,12 @@ public final class InputLogic {
         final int codePoint = event.getCodePoint();
         mSpaceState = SpaceState.NONE;
         final SettingsValues sv = inputTransaction.getSettingsValues();
+        if (isComposingPinyin() && Pinyin.isInputCodePoint(codePoint)
+                && mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
+            editPinyinCompositionAtCursor(0, StringUtils.newSingleCodePointString(codePoint));
+            inputTransaction.setRequiresUpdateSuggestions();
+            return;
+        }
 
         // wrap / unwrap selected text in codepoint pairs
         if (!mWordComposer.isComposingWord() && mConnection.hasSelection()) { // we should never be composing when something is selected
@@ -993,7 +1017,8 @@ public final class InputLogic {
         //  otherwise it would work too, but whenever a separator is entered, the word is not selected
         //  until the next character is entered, and the word is added to history
         //  -> the changing selection would be confusing, and adding partial URLs to history is probably bad
-        if (Character.getType(codePoint) == Character.OTHER_SYMBOL
+        if ((isComposingPinyin() && !Pinyin.isInputCodePoint(codePoint))
+                || Character.getType(codePoint) == Character.OTHER_SYMBOL
                 || (Character.getType(codePoint) == Character.UNASSIGNED && StringUtils.mightBeEmoji(codePoint)) // outdated java doesn't detect some emojis
                 || (sv.isWordSeparator(codePoint)
                     && (Character.isWhitespace(codePoint) // whitespace is always a separator
@@ -1087,6 +1112,7 @@ public final class InputLogic {
         // We only start composing if this is a word code point. Essentially that means it's a
         // a letter or a word connector.
                 && settingsValues.isWordCodePoint(codePoint)
+                && (!isPinyinInput() || Pinyin.isInputCodePoint(codePoint))
         // We never go into composing state if suggestions are not requested.
                 && settingsValues.needsToLookupSuggestions() &&
         // In languages with spaces, we only start composing a word when we are not already
@@ -1154,6 +1180,15 @@ public final class InputLogic {
             final LatinIME.UIHandler handler) {
         final int codePoint = event.getCodePoint();
         final SettingsValues settingsValues = inputTransaction.getSettingsValues();
+        if (isComposingPinyin()) {
+            if (Constants.CODE_SPACE == codePoint) {
+                commitPinyinBestCandidate();
+                inputTransaction.setRequiresUpdateSuggestions();
+                inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
+                return;
+            }
+            commitPinyinForSeparator(codePoint, settingsValues);
+        }
         final boolean wasComposingWord = mWordComposer.isComposingWord();
         // We avoid sending spaces in languages without spaces if we were composing.
         final boolean shouldAvoidSendingCode = Constants.CODE_SPACE == codePoint
@@ -1291,6 +1326,12 @@ public final class InputLogic {
                 : InputTransaction.SHIFT_UPDATE_NOW;
         inputTransaction.requireShiftUpdate(shiftUpdateKind);
 
+        if (isComposingPinyin() && mWordComposer.isCursorFrontOrMiddleOfComposingWord()
+                && mWordComposer.getCursorPositionWithinWord() > 0) {
+            editPinyinCompositionAtCursor(1, "");
+            inputTransaction.setRequiresUpdateSuggestions();
+            return;
+        }
         if (mWordComposer.isCursorFrontOrMiddleOfComposingWord()) {
             // If we are in the middle of a recorrection, we need to commit the recorrection
             // first so that we can remove the character at the current cursor position.
@@ -1769,7 +1810,7 @@ public final class InputLogic {
             return;
         }
 
-        if (!mWordComposer.isComposingWord() && !settingsValues.mBigramPredictionEnabled) {
+        if (!mWordComposer.isComposingWord() && (!settingsValues.mBigramPredictionEnabled || isPinyinInput())) {
             mSuggestionStripViewAccessor.setNeutralSuggestionStrip();
             return;
         }
@@ -1786,7 +1827,7 @@ public final class InputLogic {
                 // Show new suggestions if we have at least one. Otherwise keep the old
                 // suggestions with the new typed word. Exception: if the length of the
                 // typed word is <= 1 (after a deletion typically) we clear old suggestions.
-                if (suggestedWords.size() > 1 || typedWordString.length() <= 1) {
+                if (suggestedWords.size() > 1 || typedWordString.length() <= 1 || isPinyinInput()) {
                     holder.set(suggestedWords);
                 } else {
                     holder.set(retrieveOlderSuggestions(typedWordInfo, mSuggestedWords));
@@ -1821,6 +1862,10 @@ public final class InputLogic {
     public void restartSuggestionsOnWordTouchedByCursor(final SettingsValues settingsValues,
             // TODO: remove this argument, put it into settingsValues
             final String currentKeyboardScript) {
+        if (isComposingPinyin()) {
+            mLatinIME.mHandler.postUpdateSuggestionStrip(SuggestedWords.INPUT_STYLE_TYPING);
+            return;
+        }
         // HACK: We may want to special-case some apps that exhibit bad behavior in case of
         // recorrection. This is a temporary, stopgap measure that will be removed later.
         // TODO: remove this.
@@ -2558,6 +2603,10 @@ public final class InputLogic {
 
     // we used to provide keyboard, settingsValues and keyboardShiftMode, but every time read it from current instance anyway
     void getSuggestedWords(final int inputStyle, final int sequenceNumber, final OnGetSuggestedWordsCallback callback) {
+        if (isPinyinInput()) {
+            callback.onGetSuggestedWords(getPinyinSuggestedWords(sequenceNumber));
+            return;
+        }
         final Keyboard keyboard = KeyboardSwitcher.getInstance().getKeyboard();
         if (keyboard == null) {
             callback.onGetSuggestedWords(SuggestedWords.getEmptyInstance());
@@ -2590,6 +2639,92 @@ public final class InputLogic {
             callback.onGetSuggestedWords(SuggestedWords.getEmptyInstance());
             KeyboardSwitcher.getInstance().showToast("Error getting suggestions", true);
         }
+    }
+
+    private boolean isPinyinInput() {
+        return Pinyin.COMBINING_SPEC.equals(mWordComposer.getCombiningSpec())
+                && Settings.getValues().mInputAttributes.mMayConvertPinyin;
+    }
+
+    private boolean isComposingPinyin() {
+        return isPinyinInput() && mWordComposer.isComposingWord();
+    }
+
+    private SuggestedWords getPinyinSuggestedWords(final int sequenceNumber) {
+        final String typedWord = mWordComposer.getTypedWord();
+        if (typedWord.isEmpty()) {
+            return SuggestedWords.getEmptyInstance();
+        }
+        final SuggestedWordInfo typedWordInfo = new SuggestedWordInfo(typedWord, "", SuggestedWordInfo.MAX_SCORE,
+                SuggestedWordInfo.KIND_TYPED, Dictionary.DICTIONARY_USER_TYPED, SuggestedWordInfo.NOT_AN_INDEX,
+                SuggestedWordInfo.NOT_A_CONFIDENCE);
+        return Pinyin.suggestedWords(typedWordInfo, Pinyin.candidates(mLatinIME, typedWord), sequenceNumber);
+    }
+
+    private InputTransaction pickPinyinCandidate(final SettingsValues settingsValues, final Pinyin.CandidateInfo candidate,
+            final CapsMode keyboardCapsMode, final LatinIME.UIHandler handler) {
+        final InputTransaction inputTransaction = new InputTransaction(settingsValues,
+                Event.createSuggestionPickedEvent(candidate), SystemClock.uptimeMillis(), mSpaceState, keyboardCapsMode);
+        inputTransaction.setDidAffectContents();
+        if (Pinyin.remainderAfter(candidate, mWordComposer.getTypedWord()) != null) {
+            mConnection.beginBatchEdit();
+            commitPinyinCandidate(candidate);
+            mConnection.endBatchEdit();
+        }
+        inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
+        handler.postUpdateSuggestionStrip(SuggestedWords.INPUT_STYLE_TYPING);
+        return inputTransaction;
+    }
+
+    private void commitPinyinBestCandidate() {
+        final String typedWord = mWordComposer.getTypedWord();
+        final List<Pinyin.CandidateInfo> candidates = Pinyin.candidates(mLatinIME, typedWord);
+        if (candidates.isEmpty()) {
+            commitPinyinText(typedWord);
+        } else {
+            commitPinyinCandidate(candidates.get(0));
+        }
+    }
+
+    private void commitPinyinCandidate(final Pinyin.CandidateInfo candidate) {
+        final String remainder = Pinyin.remainderAfter(candidate, mWordComposer.getTypedWord());
+        commitPinyinText(candidate.mWord);
+        if (remainder != null && !remainder.isEmpty()) {
+            setPinyinComposition(remainder);
+        }
+    }
+
+    // Resetting the caches after a cursor move forgets the composing text, which commits and composing
+    // text updates rely on to know where the composition starts.
+    private void restorePinyinComposingRegion() {
+        final int start = mConnection.getExpectedSelectionStart() - mWordComposer.getCursorPositionWithinWord();
+        mConnection.setComposingRegion(start, start + mWordComposer.getTypedWord().length());
+    }
+
+    private void setPinyinComposition(final String pinyin) {
+        final int[] codePoints = StringUtils.toCodePointArray(pinyin);
+        mWordComposer.setComposingWord(codePoints, mLatinIME.getCoordinatesForCurrentKeyboard(codePoints));
+        setComposingTextInternal(getTextWithUnderline(pinyin), 1);
+    }
+
+    // The cursor ends up after the composition: RichInputConnection can only set composing text with the cursor at its end.
+    private void editPinyinCompositionAtCursor(final int deletedBeforeCursor, final String inserted) {
+        final String typedWord = mWordComposer.getTypedWord();
+        final int cursor = mWordComposer.getCursorPositionWithinWord();
+        setPinyinComposition(typedWord.substring(0, cursor - deletedBeforeCursor) + inserted + typedWord.substring(cursor));
+    }
+
+    private void commitPinyinForSeparator(final int codePoint, final SettingsValues settingsValues) {
+        final String typedWord = mWordComposer.getTypedWord();
+        final boolean isUrlPunctuation = InputTypeUtils.isUriOrEmailType(settingsValues.mInputAttributes.mInputType)
+                && URL_PUNCTUATION.indexOf(codePoint) >= 0;
+        commitPinyinText(isUrlPunctuation ? typedWord : Pinyin.convert(mLatinIME, typedWord));
+    }
+
+    private void commitPinyinText(final String text) {
+        mConnection.commitText(text, 1);
+        resetComposingState(true);
+        mSpaceState = SpaceState.NONE;
     }
 
     /**

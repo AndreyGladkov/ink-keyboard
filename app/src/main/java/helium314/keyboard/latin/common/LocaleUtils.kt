@@ -196,6 +196,7 @@ object LocaleUtils {
             "st" -> R.string.subtype_st
             "dag" -> R.string.subtype_dag
             "mhr" -> R.string.subtype_mhr
+            "zh-CN" -> R.string.subtype_zh_CN
             else -> 0
         }
         if (overrideResId != 0) {

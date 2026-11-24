@@ -25,6 +25,7 @@ import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.latin.common.StringUtils
 import helium314.keyboard.latin.inputlogic.InputLogic
 import helium314.keyboard.latin.inputlogic.SpaceState
+import helium314.keyboard.latin.pinyin.Pinyin
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.utils.ScriptUtils
 import helium314.keyboard.latin.utils.SubtypeSettings
@@ -44,6 +45,7 @@ import kotlin.streams.asSequence
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 @RunWith(RobolectricTestRunner::class)
 @Config(shadows = [
@@ -188,6 +190,166 @@ class InputLogicTest {
         latinIME.switchToSubtype(SubtypeSettings.getResourceSubtypesForLocale("ko".constructLocale()).first())
         chainInput("ㅛ.")
         assertEquals("ㅛ.", text)
+    }
+
+    @Test fun pinyinSpaceCommitsBestCandidate() {
+        switchToPinyin()
+        chainInput("nihao")
+        assertEquals("nihao", composingText)
+        input(' ')
+        assertEquals("你好", text)
+        assertEquals("", composingText)
+    }
+
+    @Test fun pinyinSpaceConvertsSentence() {
+        switchToPinyin()
+        chainInput("woxiangchifan ")
+        assertEquals("我想吃饭", text)
+    }
+
+    @Test fun pinyinSpaceWithoutCompositionTypesSpace() {
+        switchToPinyin()
+        chainInput("ni  ")
+        assertEquals("你 ", text)
+    }
+
+    @Test fun pinyinPickedCandidateLeavesRestComposing() {
+        switchToPinyin()
+        chainInput("nihao")
+        pickPinyinCandidate("你")
+        assertEquals("你hao", text)
+        assertEquals("hao", composingText)
+        input(' ')
+        assertEquals("你好", text)
+    }
+
+    @Test fun pinyinPunctuationConvertsWholeComposition() {
+        switchToPinyin()
+        chainInput("nihao，")
+        assertEquals("你好，", text)
+    }
+
+    @Test fun pinyinDigitConvertsWholeComposition() {
+        switchToPinyin()
+        chainInput("ni3")
+        assertEquals("你3", text)
+    }
+
+    @Test fun pinyinEnterKeepsLetters() {
+        switchToPinyin()
+        chainInput("nihao\n")
+        assertEquals("nihao", text)
+        assertEquals("", composingText)
+    }
+
+    @Test fun pinyinApostropheSeparatesSyllables() {
+        switchToPinyin()
+        chainInput("xi'an ")
+        assertEquals("西安", text)
+    }
+
+    @Test fun pinyinDeleteRemovesLetter() {
+        switchToPinyin()
+        chainInput("nih")
+        functionalKeyPress(KeyCode.DELETE)
+        assertEquals("ni", composingText)
+        input(' ')
+        assertEquals("你", text)
+    }
+
+    @Test fun pinyinTextInputConvertsComposition() {
+        switchToPinyin()
+        chainInput("ni")
+        latinIME.onTextInput("\uD83D\uDE00")
+        handleMessages()
+        checkConnectionConsistency()
+        assertEquals("你\uD83D\uDE00", text)
+    }
+
+    @Test fun pinyinConvertsInFieldWithoutSuggestions() {
+        setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+        switchToPinyin()
+        chainInput("nihao ")
+        assertEquals("你好", text)
+    }
+
+    @Test fun pinyinKeepsLettersInEmailField() {
+        setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS)
+        switchToPinyin()
+        chainInput("nihao@")
+        assertEquals("nihao@", text)
+    }
+
+    @Test fun pinyinSpaceConvertsWholeCompositionWithCursorInside() {
+        switchToPinyin()
+        chainInput("nihao")
+        setCursorPosition(2)
+        pinyinKey(' ')
+        assertEquals("你好", text)
+        assertEquals(2, cursor)
+    }
+
+    @Test fun pinyinLetterGoesIntoCompositionAtCursor() {
+        switchToPinyin()
+        chainInput("nhao")
+        setCursorPosition(1)
+        pinyinKey('i')
+        assertEquals("nihao", composingText)
+        pinyinKey(' ')
+        assertEquals("你好", text)
+    }
+
+    @Test fun pinyinDeleteRemovesLetterBeforeCursorInComposition() {
+        switchToPinyin()
+        chainInput("nixhao")
+        setCursorPosition(3)
+        functionalKeyPress(KeyCode.DELETE)
+        assertEquals("nihao", composingText)
+        pinyinKey(' ')
+        assertEquals("你好", text)
+    }
+
+    @Test fun pinyinKeepsUrlPartsInUrlField() {
+        setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI)
+        switchToPinyin()
+        chainInput("baidu.com\n")
+        assertEquals("baidu.com", text)
+    }
+
+    @Test fun pinyinCompositionStartsOnlyWithLatinLetters() {
+        switchToPinyin()
+        chainInput("éni ")
+        assertEquals("é你", text)
+    }
+
+    @Test fun pinyinConvertsWithSuggestionsTurnedOff() {
+        latinIME.prefs().edit {
+            putBoolean(Settings.PREF_SHOW_SUGGESTIONS, false)
+            putBoolean(Settings.PREF_AUTO_CORRECTION, false)
+        }
+        setText("")
+        switchToPinyin()
+        chainInput("nihao ")
+        assertEquals("你好", text)
+    }
+
+    @Test fun pinyinIgnoresCandidateForOlderComposition() {
+        switchToPinyin()
+        chainInput("nihao")
+        val outdated = Pinyin.candidates(latinIME, composer.typedWord).first { it.mWord == "你好" }
+        functionalKeyPress(KeyCode.DELETE)
+        functionalKeyPress(KeyCode.DELETE)
+        latinIME.pickSuggestionManually(outdated)
+        handleMessages()
+        assertEquals("nih", text)
+        assertEquals("nih", composingText)
+    }
+
+    @Test fun pinyinHasNoAutoCaps() {
+        setInputType(InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
+        assertNotEquals(Constants.TextUtils.CAP_MODE_OFF, inputLogic.getCurrentAutoCapsState(settingsValues))
+        switchToPinyin()
+        assertEquals(Constants.TextUtils.CAP_MODE_OFF, inputLogic.getCurrentAutoCapsState(settingsValues))
     }
 
     @Test fun deleteHangulInDebugMode() { // issue 1551, later only happened on phone
@@ -736,6 +898,23 @@ class InputLogicTest {
     }
 
     private fun chainInput(text: String) = text.forEach { input(it.code) }
+
+    private fun switchToPinyin() {
+        latinIME.switchToSubtype(SubtypeSettings.getResourceSubtypesForLocale("zh-CN".constructLocale()).first())
+    }
+
+    // unlike input(), allows the conversion to replace composing text after the cursor
+    private fun pinyinKey(char: Char) {
+        latinIME.onEvent(Event.createEventForCodePointFromUnknownSource(char.code))
+        handleMessages()
+        checkConnectionConsistency()
+    }
+
+    private fun pickPinyinCandidate(word: String) {
+        latinIME.pickSuggestionManually(Pinyin.candidates(latinIME, composer.typedWord).first { it.mWord == word })
+        handleMessages()
+        checkConnectionConsistency()
+    }
 
     private fun input(char: Char) = input(char.code)
 

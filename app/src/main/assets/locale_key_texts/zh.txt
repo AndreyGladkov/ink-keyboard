@@ -1,0 +1,12 @@
+[popup_keys]
+punctuation !autoColumnOrder!8 ， ？ ！ ： ； 、 … — “ ” ‘ ’ （ ） 《 》 ～ · \, ? ! ' "
+' ‘ ’ 『 』
+" “ ” 「 」
+! ！
+( （
+) ）
+
+[labels]
+comma: ，
+period: 。
+question: ？

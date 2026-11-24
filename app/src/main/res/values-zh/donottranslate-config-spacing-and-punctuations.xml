@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    SPDX-License-Identifier: GPL-3.0-only
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="suggested_punctuations">，,。,？,！,：,；,、,“,”,（,）,《,》</string>
+    <!-- Don't remove the enclosing double quotes, they protect whitespace (not just U+0020) -->
+    <string name="symbols_word_separators">"&#x0009;&#x0020;&#x000A;&#x00A0;"()[]{}*&amp;&lt;&gt;+=|.,;:!?/_\"„“…‽，。、；：？！—·”‘’（）《》〈〉「」『』【】～</string>
+    <string name="symbols_sentence_terminators">.?!‽。？！</string>
+    <!-- U+3002: "。" IDEOGRAPHIC FULL STOP -->
+    <integer name="sentence_separator">12290</integer>
+    <bool name="current_language_has_spaces">false</bool>
+</resources>
