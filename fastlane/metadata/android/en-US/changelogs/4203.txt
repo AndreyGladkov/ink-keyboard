@@ -1,1 +1,1 @@
-• Simplified Chinese with Pinyin input: characters on the suggestion strip, whole sentences on space, initials as abbreviations
+• Built into a ROM, the keyboard is now turned on as the default one on a fresh install
