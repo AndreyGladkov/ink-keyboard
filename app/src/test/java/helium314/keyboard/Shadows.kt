@@ -37,7 +37,7 @@ object ShadowLocaleManagerCompat {
 
 // why doesn't the original ShadowInputMethodManager simply work?
 @Implements(InputMethodManager::class)
-class ShadowInputMethodManager2 : ShadowInputMethodManager() {
+open class ShadowInputMethodManager2 : ShadowInputMethodManager() {
     @Implementation
     override fun getInputMethodList() = listOf(
         InputMethodInfo(BuildConfig.APPLICATION_ID, "LatinIME", "Ink Keyboard", null),

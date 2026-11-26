@@ -1,0 +1,1 @@
+• Built into a ROM, the keyboard is now turned on as the default one on a fresh install
