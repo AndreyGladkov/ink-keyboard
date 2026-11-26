@@ -75,13 +75,13 @@ abstract class AndroidWordLevelSpellCheckerSession(private val mService: Android
             val imm = mService.applicationContext.getSystemService(InputMethodManager::class.java)
             val currentInputMethodSubtype = imm?.currentInputMethodSubtype
             if (currentInputMethodSubtype != null) {
+                // The system only knows the dummy subtype of this app, whose locale is not the keyboard language
+                if (currentInputMethodSubtype.extraValue == "dummy") {
+                    return getSelectedSubtype(mService.prefs()).locale
+                }
                 val localeString = currentInputMethodSubtype.locale
                 if (localeString.isNotEmpty()) {
                     return localeString // Use keyboard locale if available in the spell checker
-                }
-                // localeString for this app is always empty, get it from settings if possible
-                if (currentInputMethodSubtype.extraValue == "dummy") { // make sure this app is used
-                    return getSelectedSubtype(mService.prefs()).locale
                 }
             }
         }
