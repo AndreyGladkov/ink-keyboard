@@ -1,1 +1,1 @@
-• On Android 16 the globe below the keyboard switches between the keyboard's languages instead of opening the list of keyboards, and a long press lists them. Built into a ROM, the keyboard then hides its own language key
+• The pressed key is filled black while you hold it, so the e-ink screen shows which key you hit. It can be turned off in Appearance

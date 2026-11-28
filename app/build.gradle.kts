@@ -30,8 +30,8 @@ android {
         applicationId = "io.github.andreygladkov.inkkeyboard"
         minSdk = 21
         targetSdk = 37
-        versionCode = 4204
-        versionName = "4.2-ink.5"
+        versionCode = 4205
+        versionName = "4.2-ink.6"
         // versionCode of the merged HeliBoard release: settings migrations in AppUpgrade.kt are gated on it, see README
         buildConfigField("int", "HELIBOARD_VERSION_CODE", "4201")
         ndk {
