@@ -1,1 +1,0 @@
-• On Android 16 the globe below the keyboard switches between the keyboard's languages instead of opening the list of keyboards, and a long press lists them. Built into a ROM, the keyboard then hides its own language key

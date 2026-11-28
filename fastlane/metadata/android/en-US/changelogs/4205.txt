@@ -1,0 +1,1 @@
+• The pressed key is filled black while you hold it, so the e-ink screen shows which key you hit. It can be turned off in Appearance

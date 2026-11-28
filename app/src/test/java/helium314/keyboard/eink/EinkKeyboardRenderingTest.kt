@@ -49,6 +49,7 @@ class EinkKeyboardRenderingTest {
         assertEquals(Color.BLACK, colors.foreground)
         assertEquals(Color.WHITE, colors.background)
         assertEquals(false, colors.style.antiAlias)
+        assertEquals(true, colors.style.invertPressedKey)
     }
 
     @Test fun blackOnWhiteKeyboardIsPureBlackAndWhite() {
