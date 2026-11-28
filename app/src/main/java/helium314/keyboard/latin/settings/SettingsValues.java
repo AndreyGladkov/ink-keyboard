@@ -29,6 +29,7 @@ import helium314.keyboard.latin.InputAttributes;
 import helium314.keyboard.latin.PunctuationSuggestions;
 import helium314.keyboard.latin.R;
 import helium314.keyboard.latin.RichInputMethodManager;
+import helium314.keyboard.latin.SystemSubtypes;
 import helium314.keyboard.latin.common.Colors;
 import helium314.keyboard.latin.permissions.PermissionsUtil;
 import helium314.keyboard.latin.pinyin.Pinyin;
@@ -386,6 +387,10 @@ public class SettingsValues {
 
     public boolean isLanguageSwitchKeyEnabled() {
         if (!mShowsLanguageSwitchKey) {
+            return false;
+        }
+        // the switcher button below the keyboard replaces the key only where the key cycles layouts
+        if (mLanguageSwitchKeyToOtherSubtypes && SystemSubtypes.INSTANCE.getSystemSwitchesLayouts()) {
             return false;
         }
         final RichInputMethodManager imm = RichInputMethodManager.getInstance();

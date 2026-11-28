@@ -415,6 +415,10 @@ public class LatinIME extends InputMethodService implements
             obtainMessage(MSG_UPDATE_TAIL_BATCH_INPUT_COMPLETED, suggestedWords).sendToTarget();
         }
 
+        public boolean hasPendingSwitchLanguage() {
+            return hasMessages(MSG_SWITCH_LANGUAGE_AUTOMATICALLY);
+        }
+
         public void postSwitchLanguage(final InputMethodSubtype subtype) {
             obtainMessage(MSG_SWITCH_LANGUAGE_AUTOMATICALLY, subtype).sendToTarget();
         }
@@ -828,6 +832,14 @@ public class LatinIME extends InputMethodService implements
             // Now that the dummy subtype has a fixed id, we can easily avoid enabling it.
             return;
         }
+        if (!SubtypeSettings.INSTANCE.getEnabledSubtypes(true).contains(subtype)) {
+            // the system may still offer a layout that was disabled since it was last published
+            return;
+        }
+        applySubtype(subtype);
+    }
+
+    private void applySubtype(final InputMethodSubtype subtype) {
         InputMethodSubtype oldSubtype = mRichImm.getCurrentSubtype().getRawSubtype();
         if (subtype.equals(oldSubtype)) {
             // onStartInput may be called more than once, resulting in duplicate subtype switches
@@ -848,9 +860,17 @@ public class LatinIME extends InputMethodService implements
         mSettings.saveSubtypeForApp(mRichImm.getCurrentSubtype(), getCurrentInputEditorInfo().packageName);
     }
 
-    /** alias to onCurrentInputMethodSubtypeChanged with a better name, as it's also used for internal switching */
+    @Override
+    public void onCustomImeSwitcherButtonRequestedVisible(final boolean visible) {
+        if (SystemSubtypes.INSTANCE.getCustomSwitcherRequested() == visible) return;
+        SystemSubtypes.INSTANCE.setCustomSwitcherRequested(visible);
+        mKeyboardSwitcher.reloadKeyboard();
+    }
+
+    /** Switches the layout from inside the keyboard, while onCurrentInputMethodSubtypeChanged is called by the system. */
     public void switchToSubtype(final InputMethodSubtype subtype) {
-        onCurrentInputMethodSubtypeChanged(subtype);
+        applySubtype(subtype);
+        SystemSubtypes.INSTANCE.select(this, subtype);
     }
 
     private void onStartInputInternal(EditorInfo editorInfo, boolean restarting) {
@@ -879,6 +899,10 @@ public class LatinIME extends InputMethodService implements
         // also wouldn't be consuming gesture data.
         mGestureConsumer = GestureConsumer.NULL_GESTURE_CONSUMER;
         mRichImm.refreshSubtypeCaches();
+        // selecting the current layout now would make the system echo it back after the pending
+        // switch, flipping the keyboard back and forth
+        SystemSubtypes.INSTANCE.sync(this, mHandler.hasPendingSwitchLanguage()
+                ? null : mRichImm.getCurrentSubtype().getRawSubtype());
         final KeyboardSwitcher switcher = mKeyboardSwitcher;
 
         // If we are starting input in a different text field from before, we'll have to reload

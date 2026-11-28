@@ -48,6 +48,21 @@ open class ShadowInputMethodManager2 : ShadowInputMethodManager() {
     override fun getCurrentInputMethodSubtype() = InputMethodSubtype.InputMethodSubtypeBuilder()
         .setSubtypeLocale("en")
         .build()
+    @Implementation
+    fun setAdditionalInputMethodSubtypes(imiId: String, subtypes: Array<InputMethodSubtype>) {
+        additionalSubtypes = subtypes.toList()
+    }
+    @Implementation
+    fun setExplicitlyEnabledInputMethodSubtypes(imiId: String, subtypeHashCodes: IntArray) {
+        explicitlyEnabledSubtypes = subtypeHashCodes.toList()
+        explicitlyEnabledCalls++
+    }
+
+    companion object {
+        var additionalSubtypes = listOf<InputMethodSubtype>()
+        var explicitlyEnabledSubtypes = listOf<Int>()
+        var explicitlyEnabledCalls = 0
+    }
 }
 
 @Implements(BinaryDictionaryUtils::class)
